@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual art curator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      /* Custom styles for the layout */
+      body {
+        padding: 20px;
+      }
+
+      .image-container {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .chat-container {
+        width: 100%;
+      }
+
+      .chat-box {
+        border: 1px solid #ddd;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+      }
+
+      .user-input {
+        margin-top: 10px;
+      }
+
+      .loading-message {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="image-container">
+            <img
+              src="{{ url_for('static', filename='/images/Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg')}}"
+              alt="Image"
+              class="img-fluid"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="chat-container">
+            <div class="chat-box" id="chatBox">
+              <!-- Initial chat messages will be displayed here -->
+              <p>
+                <strong>Chatbot:</strong> Hello! I am the curator of the virtual art museum and will be happy to answer
+                any questions that you have - please ask away!
+              </p>
+            </div>
+
+            <div class="loading-message" id="loadingMessage">
+              <p>Loading...</p>
+            </div>
+
+            <div class="user-input">
+              <input type="text" id="userMessage" class="form-control" placeholder="Type your message" />
+              <button class="btn btn-primary mt-2" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      function sendMessage() {
+        var userMessage = document.getElementById("userMessage").value;
+        var chatBox = document.getElementById("chatBox");
+        var loadingMessage = document.getElementById("loadingMessage");
+
+        // Display user message
+        chatBox.innerHTML += "<p><strong>User:</strong> " + userMessage + "</p>";
+        document.getElementById("userMessage").value = "";
+
+        // Show loading message
+        loadingMessage.style.display = "block";
+
+        // Simulate a delayed response from the chatbot
+        setTimeout(function () {
+          // Hide loading message
+          loadingMessage.style.display = "none";
+
+          // Display chatbot response
+          chatBox.innerHTML += "<p><strong>Chatbot:</strong> " + getChatbotResponse(userMessage) + "</p>";
+        }, 2000); // Simulating a 2-second delay
+      }
+
+      // Allow sending a message by pressing Enter
+      document.getElementById("userMessage").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      function getChatbotResponse(userMessage) {
+        return "Test message";
+      }
+    </script>
+  </body>
+</html>

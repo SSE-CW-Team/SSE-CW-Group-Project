@@ -84,7 +84,7 @@ if (error) {
       playlistDurationMs -= removedTrack.duration_ms;
     }
 
-    return playlist;
+    return playlist;	// return as array of song titles or track_IDs for Spotify API
   };
 
   // Build and adjust the playlist based on the actual song durations

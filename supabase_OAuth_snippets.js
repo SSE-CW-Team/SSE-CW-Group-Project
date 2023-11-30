@@ -1,4 +1,4 @@
-// Initialize the Supabase client with project URL and public API key
+/* // Initialize the Supabase client with project URL and public API key
 // These are saved as Vercel environmental variables under these names:
 import { createClient } from '@supabase/supabase-js'
 
@@ -92,4 +92,4 @@ if (error) {
 
   console.log('Final playlist:', finalPlaylist);
   // Process the final playlist as needed
-}
+} */

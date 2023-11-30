@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from spotipy.oauth2 import SpotifyOAuth
-from spotipy import Spotify
+from spotipy.oauth2 import SpotifyOAuth  # type: ignore
+from spotipy import Spotify  # type: ignore
 import time
 import os
 
@@ -81,15 +81,15 @@ def get_refreshed_token():
 @app.route('/create_playlist')  # probably doesn't need its own url
 def create_playlist():
     # INITIALISE THE PLAYLIST
-    print("Refreshing token...")
+    # print("Refreshing token...")
     token_info = get_refreshed_token()
-    print("Creating Spotify client...")
+    # print("Creating Spotify client...")
     sp = Spotify(auth=token_info['access_token'])
-    print("Getting user info...")
+    # print("Getting user info...")
     user_info = sp.me()
-    print("Getting user id...")
+    # print("Getting user id...")
     user_id = user_info["id"]
-    print("Creating playlist...")
+    # print("Creating playlist...")
     try:
         sp.user_playlist_create(user_id,
                                 new_playlist_name,

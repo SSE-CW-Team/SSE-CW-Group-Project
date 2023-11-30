@@ -50,6 +50,9 @@ jobs:
       run: pytest api/*.py  --cov=api
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
   deploy-to-vercel:
     needs: [python-formatting, type-checking, unit-testing]

@@ -2,9 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
-
+from dotenv import load_dotenv
 import time
 import os
+
+load_dotenv()
 
 app = Flask(__name__)
 

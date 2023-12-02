@@ -60,7 +60,7 @@ h1 {
     font-size: 16px;
 }
 
-button {
+.main-button {
     width: 100%;
     padding: 10px;
     border: none;
@@ -72,7 +72,7 @@ button {
     font-weight: bold;
 }
 
-button:hover {
+.main-button:hover {
     background-color: #218838; /* Darker green on hover */
 }
 
@@ -81,4 +81,34 @@ button:hover {
     color: #6c757d; /* Grey color for explanation text */
     margin-bottom: 20px;
     text-align: center;
+}
+
+.remove {
+    margin-left: 10px; 
+    padding: 5px 10px;
+    background-color: #ff5757; 
+    color: #fff; 
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    width: auto;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove:hover {
+    background-color: #fb2e2e; 
+}
+
+#selectedList li {
+    margin-bottom: 5px; /
+  }
+
+#genreList,
+#selectedOptions {
+margin-top: 10px; 
+}
+
+#selectedList li {
+margin-bottom: 5px; 
 }

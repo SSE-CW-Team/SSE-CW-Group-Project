@@ -1,44 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pace - Your Running Companion</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}">
-</head>
-<body>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
+  </head>
+  <body>
     <div class="container">
-        <h1>Pace: Running Playlist Generator</h1>
-        <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
-        <form id="inputForm" action="/generate" method="post">
-            <div class="form-group">
-                <label for="distance">Distance (km):</label>
-                <input type="number" id="distance" name="distance" required>
-            </div>
-            <div class="form-group">
-                <label for="location">Your Location (City/Area):</label>
-                <input type="text" id="location" name="location" required>
-            </div>
-            <div class="form-group">
-                <label for="genre">Preferred Music Genre:</label>
-                <select id="genre" name="genre">
-                    <option value="pop">Pop</option>
-                    <option value="rock">Rock</option>
-                    <option value="hiphop">Hip-Hop</option>
-                    <option value="jazz">Jazz</option>
-                    <option value="classical">Classical</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="intensity">Running Intensity:</label>
-                <select id="intensity" name="intensity">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-            </div>
-            <button type="submit">Generate Playlist</button>
-        </form>
+      <h1>Pace: Running Playlist Generator</h1>
+      <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
+      <form id="inputForm" action="/success" method="post">
+        <div class="form-group">
+          <label for="distance">Distance (km):</label>
+          <input type="number" id="distance" name="distance" min="0" max="100" required />
+        </div>
+        <div class="form-group">
+          <label for="run_length">Approximate running time (mins)</label>
+          <input type="number" id="run_length" name="run_length" min="0" max="200" required />
+        </div>
+        <div class="form-group">
+          <label for="genre">Music Genres to be included:</label>
+          <input type="text" id="genre" list="genreList" oninput="filterOptions()" />
+          <datalist id="genreList">
+            <option value="Acoustic"></option>
+            <option value="Afrobeat"></option>
+            <option value="Alternative"></option>
+            <option value="Alt-Rock"></option>
+            <option value="Ambient"></option>
+            <option value="Anime"></option>
+            <option value="Black-Metal"></option>
+            <option value="Bluegrass"></option>
+            <option value="Blues"></option>
+            <option value="Brazil"></option>
+            <option value="Breakbeat"></option>
+            <option value="British"></option>
+            <option value="Cantopop"></option>
+            <option value="Chicago-House"></option>
+            <option value="Children"></option>
+            <option value="Chill"></option>
+            <option value="Classical"></option>
+            <option value="Club"></option>
+            <option value="Comedy"></option>
+            <option value="Country"></option>
+            <option value="Dance"></option>
+            <option value="Dancehall"></option>
+            <option value="Death-Metal"></option>
+            <option value="Deep-House"></option>
+            <option value="Detroit-Techno"></option>
+            <option value="Disco"></option>
+            <option value="Disney"></option>
+            <option value="Drum-and-Bass"></option>
+            <option value="Dub"></option>
+            <option value="Dubstep"></option>
+            <option value="EDM"></option>
+            <option value="Electro"></option>
+            <option value="Electronic"></option>
+            <option value="Emo"></option>
+            <option value="Folk"></option>
+            <option value="Forro"></option>
+            <option value="French"></option>
+            <option value="Funk"></option>
+            <option value="Garage"></option>
+            <option value="German"></option>
+            <option value="Gospel"></option>
+            <option value="Goth"></option>
+            <option value="Grindcore"></option>
+            <option value="Groove"></option>
+            <option value="Grunge"></option>
+            <option value="Guitar"></option>
+            <option value="Happy"></option>
+            <option value="Hardcore"></option>
+            <option value="Hard-Rock"></option>
+            <option value="Hardstyle"></option>
+            <option value="Heavy-Metal"></option>
+            <option value="Hip-Hop"></option>
+            <option value="Honky-Tonk"></option>
+            <option value="House"></option>
+            <option value="IDM"></option>
+            <option value="Indian"></option>
+            <option value="Indie"></option>
+            <option value="Indie-Pop"></option>
+            <option value="Industrial"></option>
+            <option value="Iranian"></option>
+            <option value="Jazz"></option>
+            <option value="J-Dance"></option>
+            <option value="J-Idol"></option>
+            <option value="J-Pop"></option>
+            <option value="J-Rock"></option>
+            <option value="Kids"></option>
+            <option value="K-Pop"></option>
+            <option value="Latin"></option>
+            <option value="Latino"></option>
+            <option value="Malay"></option>
+            <option value="Mandopop"></option>
+            <option value="Metal"></option>
+            <option value="Metalcore"></option>
+            <option value="Minimal-Techno"></option>
+            <option value="MPB"></option>
+            <option value="New-Age"></option>
+            <option value="Opera"></option>
+            <option value="Pagode"></option>
+            <option value="Party"></option>
+            <option value="Piano"></option>
+            <option value="Pop"></option>
+            <option value="Pop-Film"></option>
+            <option value="Power-Pop"></option>
+            <option value="Progressive-House"></option>
+            <option value="Psych-Rock"></option>
+            <option value="Punk"></option>
+            <option value="Punk-Rock"></option>
+            <option value="Reggae"></option>
+            <option value="Reggaeton"></option>
+            <option value="R-n-B"></option>
+            <option value="Rock"></option>
+            <option value="Rockabilly"></option>
+            <option value="Rock-n-Roll"></option>
+            <option value="Romance"></option>
+            <option value="Sad"></option>
+            <option value="Salsa"></option>
+            <option value="Samba"></option>
+            <option value="Sertanejo"></option>
+            <option value="Show-Tunes"></option>
+            <option value="Singer-Songwriter"></option>
+            <option value="Ska"></option>
+            <option value="Sleep"></option>
+            <option value="Songwriter"></option>
+            <option value="Soul"></option>
+            <option value="Spanish"></option>
+            <option value="Study"></option>
+            <option value="Swedish"></option>
+            <option value="Synth-Pop"></option>
+            <option value="Tango"></option>
+            <option value="Techno"></option>
+            <option value="Track_Genre"></option>
+            <option value="Trance"></option>
+            <option value="Trip-Hop"></option>
+            <option value="Turkish"></option>
+            <option value="World-Music"></option>
+          </datalist>
+
+          <!-- Selected Options List -->
+          <div id="selectedOptions">
+            <label for="selectedList">Selected genres:</label>
+            <ul id="selectedList"></ul>
+          </div>
+
+          <!-- Link to external JavaScript file -->
+          <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
+        </div>
+        <div class="form-group">
+          <label for="intensity">Running Intensity:</label>
+          <select id="intensity" name="intensity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <button type="submit" class="main-button">Generate Playlist</button>
+      </form>
     </div>
-</body>
+  </body>
 </html>

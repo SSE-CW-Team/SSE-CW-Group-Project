@@ -30,14 +30,20 @@ def index():
     return render_template("index.html")
 
 
-def get_songs_from_database(run_length_in_minutes):
+def get_songs_from_database(run_length_in_minutes, genres, intensity):
     # Variables (You can modify these based on user input)
-    favorite_genre = "rock"
     run_length_ms = run_length_in_minutes * 60000
 
     # Energy thresholds for the high intensity
-    energy_upper_threshold = 0.7
-    energy_lower_threshold = 0.4
+    if intensity == "high":
+        energy_upper_threshold = 0.9
+        energy_lower_threshold = 0.7
+    elif intensity == "medium":
+        energy_upper_threshold = 0.7
+        energy_lower_threshold = 0.5
+    elif intensity == "low":
+        energy_upper_threshold = 0.5
+        energy_lower_threshold = 0.3
 
     # Query using these inputs
     response = (
@@ -45,7 +51,7 @@ def get_songs_from_database(run_length_in_minutes):
         .select("track_id, duration_ms")
         .gte("energy", energy_lower_threshold)
         .lte("energy", energy_upper_threshold)
-        .eq("track_genre", favorite_genre)
+        .in_("track_genre", genres)
         .order("popularity", desc=True)
         .limit(300)
         .execute()
@@ -65,15 +71,13 @@ def get_songs_from_database(run_length_in_minutes):
             total_duration += song["duration_ms"]
             break
 
+    print("the total duration is " + str(total_duration))
+
     return track_ids, total_duration
 
 
 @app.route("/generate", methods=["POST", "GET"])
 def generate():
-    # data = request.form
-    # distance = data.get('distance')
-    # genre = data.get('genre')
-    # intensity = data.get('intensity')
     # In later stages, the logic to generate the playlist and running route
     # would be added in a function. Instead, the program has already picked
     # Oasis - Wonderwall for you and nothing else. Sorry about that.
@@ -81,10 +85,10 @@ def generate():
     global new_playlist_name
     # I've made these global since they are used in a different function
     # Perhaps there is a better way of doing this.
-    new_playlist_name = "Pace playlist with a song!"
+    new_playlist_name = "Playlist that is linked to the database!"
     # Could test for artists that won't be found as well
     global description
-    description = "A new playlist created through Pace app!"
+    description = "Playlist created by Tempo!"
     global collaborative
     collaborative = "false"
     sp_oauth = get_spotify_oauth()
@@ -102,7 +106,7 @@ def generate():
 @app.route("/redirect")
 def _redirect():
     sp_oauth = get_spotify_oauth()
-    session.clear()
+    session.pop("token info")
     code = request.args.get("code", None)  # returns None if request fails
     token_info = sp_oauth.get_access_token(code)
     session["token info"] = token_info  # needed for refreshing token
@@ -146,8 +150,8 @@ def create_playlist():
     last_playlist_id = sp.user_playlists(user_id)["items"][0]["id"]
     # ADD ITEMS TO PLAYLIST
     print("Adding songs to playlist...")
-    run_length = 30
-    ids_to_add = get_songs_from_database(run_length)[0]
+    ids_to_add = session.get("track_ids")
+    print(ids_to_add)
     try:
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:
@@ -166,9 +170,25 @@ def get_spotify_oauth():
 
 # Page that links you to Spotify. Maybe it could contain a link
 # to your playlist instead?
-@app.route("/success")
+@app.route("/success", methods=["GET"])
 def success():
     return render_template("success_page.html")
+
+
+@app.route("/fetch_songs", methods=["POST"])
+def fetch_songs():
+    run_length = float(request.form.get("run_length"))
+    genres = string_to_list(request.form.get("selectedGenres"))
+    intensity = request.form.get("intensity")
+    session["track_ids"] = get_songs_from_database(run_length, genres, intensity)[0]
+    print(session["track_ids"])
+    return redirect(url_for("success", _external=True))
+
+
+def string_to_list(input_string):
+    result_list = input_string.split(", ")
+    result_list = [item.strip().lower() for item in result_list]
+    return result_list
 
 
 if __name__ == "__main__":

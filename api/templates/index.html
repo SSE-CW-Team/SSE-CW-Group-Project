@@ -10,7 +10,7 @@
     <div class="container">
       <h1>Pace: Running Playlist Generator</h1>
       <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
-      <form id="inputForm" action="/success" method="post">
+      <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
         <div class="form-group">
           <label for="distance">Distance (km):</label>
           <input type="number" id="distance" name="distance" min="0" max="100" required />
@@ -21,7 +21,7 @@
         </div>
         <div class="form-group">
           <label for="genre">Music Genres to be included:</label>
-          <input type="text" id="genre" list="genreList" oninput="filterOptions()" />
+          <input type="text" id="genre" name="genre" list="genreList" oninput="filterOptions()" />
           <datalist id="genreList">
             <option value="Acoustic"></option>
             <option value="Afrobeat"></option>
@@ -157,6 +157,7 @@
             <option value="high">High</option>
           </select>
         </div>
+        <input type="hidden" id="selectedGenres" name="selectedGenres" value="" />
         <button type="submit" class="main-button">Generate Playlist</button>
       </form>
     </div>

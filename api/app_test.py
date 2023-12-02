@@ -34,13 +34,13 @@ def test_redirect_from_spotify(client):
 
 def test_positive_mins_returns_data():
     mins = 30
-    genres = ['pop', 'rock', 'hip-hop']
-    intesity = 'medium'
+    genres = ["pop", "rock", "hip-hop"]
+    intesity = "medium"
     assert get_songs_from_database(mins, genres, intesity)[0] != []
 
 
 def test_playlist_length_exceeds_run_length():
     mins = 30
-    genres = ['pop', 'rock', 'hip-hop']
-    intesity = 'medium'
+    genres = ["pop", "rock", "hip-hop"]
+    intesity = "medium"
     assert get_songs_from_database(mins, genres, intesity)[1] > mins

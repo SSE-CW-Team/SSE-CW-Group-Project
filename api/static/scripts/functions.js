@@ -27,6 +27,7 @@ function addToSelectedList() {
   removeButton.classList.add("remove");
   removeButton.addEventListener("click", function () {
     listItem.remove();
+    updateHiddenInput(); // Update the hidden input when removing an item
   });
 
   // Append the remove button to the list item
@@ -37,7 +38,29 @@ function addToSelectedList() {
 
   // Clear the input field
   document.getElementById("genre").value = "";
+
+  updateHiddenInput(); // Update the hidden input when adding an item
 }
 
 // Event listener for when an option is selected
 document.getElementById("genre").addEventListener("change", addToSelectedList);
+
+// Function to update the hidden input with selected genres
+function updateHiddenInput() {
+  var selectedGenres = getSelectedGenres();
+  document.getElementById("selectedGenres").value = selectedGenres.join(", ");
+}
+
+// Function to get selected genres from the list
+function getSelectedGenres() {
+  var selectedGenres = [];
+  var selectedOptions = document.getElementById("selectedList").getElementsByTagName("li");
+
+  for (var i = 0; i < selectedOptions.length; i++) {
+    var genreText = selectedOptions[i].innerText.trim();
+    genreText = genreText.endsWith("Remove") ? genreText.slice(0, -"Remove".length) : genreText;
+    selectedGenres.push(genreText);
+  }
+
+  return selectedGenres;
+}

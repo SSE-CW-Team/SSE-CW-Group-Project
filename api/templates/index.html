@@ -21,7 +21,7 @@
         </div>
         <div class="form-group">
           <label for="genre">Music Genres to be included:</label>
-          <select id="genre" name="genre" onchange="filterOptions()" required>
+          <select id="genre" name="genre" onchange="filterOptions()">
             <option value="Acoustic">Acoustic</option>
             <option value="Afrobeat">Afrobeat</option>
             <option value="Alternative">Alternative</option>
@@ -144,7 +144,13 @@
             <label for="selectedList">Selected genres:</label>
             <ul id="selectedList"></ul>
           </div>
-
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="alert alert-message">
+                  {{ messages[0] }}
+              </div>
+            {% endif %}
+          {% endwith %}
           <!-- Link to external JavaScript file -->
           <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
         </div>

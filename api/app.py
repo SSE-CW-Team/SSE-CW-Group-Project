@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import (
+    Flask, render_template, request,
+    redirect, url_for, session, flash
+)
 from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
@@ -75,8 +78,6 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
             total_duration += song["duration_ms"]
             break
 
-    print("the total duration is " + str(total_duration))
-
     return track_ids, total_duration
 
 
@@ -118,7 +119,7 @@ def create_playlist():
     user_id = user_info["id"]
     try:
         sp.user_playlist_create(
-            user_id=user_id,
+            user_id,
             name=session['new_playlist_headers']['name'],
             description=session['new_playlist_headers']['description']
         )
@@ -165,7 +166,12 @@ def fetch_songs():
     # Get track ids
     track_ids = get_songs_from_database(run_length, genres, intensity)
     session["track_ids"] = track_ids
-    return redirect(url_for("success", _external=True))
+    if not genres[0]:  # No genre selected
+        flash("Please select at least one genre")
+        return redirect(url_for('index', _external=True))
+    else:
+        print(genres)
+        return redirect(url_for("success", _external=True))
 
 
 def string_to_list(input_string):

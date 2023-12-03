@@ -4,7 +4,6 @@ from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from datetime import timedelta
-import time
 import os
 
 load_dotenv()
@@ -116,30 +115,13 @@ def _redirect():
     return redirect(url_for("create_playlist", _external=True))
 
 
-# The Spotify access token expires after an hour. This function uses
-# the refresh token provided by Spotify to make sure that this
-# isn't a problem
-def get_refreshed_token():
-    token_info = session.get("token info", None)  # None if request fails
-    timeNow = int(time.time())
-    if token_info["expires_at"] - timeNow < 60:  # token expires after an hour
-        sp_oauth = get_spotify_oauth()
-        token_info = sp_oauth.refresh_access_token(token_info["refresh_token"])
-    return token_info
-
-
 @app.route("/create_playlist")  # probably doesn't need its own url
 def create_playlist():
     # INITIALISE THE PLAYLIST
-    # print("Refreshing token...")
-    token_info = get_refreshed_token()
-    # print("Creating Spotify client...")
+    token_info = session.get("token info", None)
     sp = Spotify(auth=token_info["access_token"])
-    # print("Getting user info...")
     user_info = sp.me()
-    # print("Getting user id...")
     user_id = user_info["id"]
-    # print("Creating playlist...")
     try:
         sp.user_playlist_create(
             user_id,
@@ -153,7 +135,7 @@ def create_playlist():
     last_playlist_id = sp.user_playlists(user_id)["items"][0]["id"]
     # ADD ITEMS TO PLAYLIST
     print("Adding songs to playlist...")
-    ids_to_add = session.get("track_ids")
+    ids_to_add = session.get("track_ids")[0]
     print(ids_to_add)
     try:
         sp.playlist_add_items(last_playlist_id, ids_to_add)

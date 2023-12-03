@@ -2,6 +2,14 @@ from app import app
 from app import get_songs_from_database
 import pytest
 
+sample_data = {
+        "run_length": "3.5",
+        "selectedGenres": "Rock, Pop",
+        "intensity": "high",
+        "name": "My Playlist",
+        "description": "A great playlist",
+    }
+
 
 @pytest.fixture
 def client():
@@ -21,13 +29,6 @@ def test_login_redirect(client):
 
 
 def test_fetch_songs_redirect(client):
-    sample_data = {
-        "run_length": "3.5",
-        "selectedGenres": "Rock,Pop",
-        "intensity": "high",
-        "name": "My Playlist",
-        "description": "A great playlist",
-    }
     response = client.post("/fetch_songs", data=sample_data)
     assert response.status_code == 302
 
@@ -35,13 +36,6 @@ def test_fetch_songs_redirect(client):
 def test_success_route(client):
     response = client.get("/success")
     assert response.status_code == 200
-
-
-# Go to login page, post login details and check redirect to success page
-def test_redirect_from_spotify(client):
-    assert True  # I don't know how to do this yet.
-    # Selenium: requires you to have access to where the browser is stored
-    # Requests: I don't know how to post the login details
 
 
 def test_positive_mins_returns_data():

@@ -84,7 +84,6 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
 @app.route("/generate", methods=["POST", "GET"])
 def generate():
     session.permanent = True
-    global new_playlist_headers
     sp_oauth = get_spotify_oauth()
     # The authorise_url is where Spotify redirects you once
     # it's finished logging you in. This should be set in our app
@@ -119,9 +118,9 @@ def create_playlist():
     user_id = user_info["id"]
     try:
         sp.user_playlist_create(
-            user_id,
-            new_playlist_headers["name"],
-            description=new_playlist_headers["description"]
+            user=user_id,
+            name=session['new_playlist_headers']['name'],
+            description=session['new_playlist_headers']['description']
         )
     except Exception as e:
         return "Error creating playlist: " + str(e)
@@ -159,14 +158,12 @@ def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
     intensity = request.form.get("intensity")
-
     # Add input data to a global dict
-    global new_playlist_headers
-    new_playlist_headers = {}
+    session['new_playlist_headers'] = {}
     name = request.form.get("name")
-    new_playlist_headers["name"] = bleach.clean(name)
+    session['new_playlist_headers']['name'] = bleach.clean(name)
     description = request.form.get("description")
-    new_playlist_headers["description"] = bleach.clean(description)
+    session['new_playlist_headers']["description"] = bleach.clean(description)
     # Get track ids
     track_ids = get_songs_from_database(run_length, genres, intensity)
     session["track_ids"] = track_ids

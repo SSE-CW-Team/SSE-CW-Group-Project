@@ -84,12 +84,6 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
 def generate():
     session.permanent = True
     global new_playlist_headers
-    new_playlist_headers = {}
-    # I've made these global since they are used in a different function
-    # Perhaps there is a better way of doing this.
-    new_playlist_headers["name"] = "Playlist that is linked to the database!"
-    new_playlist_headers["description"] = "Playlist created by Tempo!"
-    new_playlist_headers["collaborative"] = "false"
     sp_oauth = get_spotify_oauth()
     # The authorise_url is where Spotify redirects you once
     # it's finished logging you in. This should be set in our app
@@ -126,7 +120,6 @@ def create_playlist():
         sp.user_playlist_create(
             user_id,
             new_playlist_headers["name"],
-            collaborative=new_playlist_headers["collaborative"],
             description=new_playlist_headers["description"]
         )
     except Exception as e:
@@ -165,6 +158,10 @@ def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
     intensity = request.form.get("intensity")
+    global new_playlist_headers
+    new_playlist_headers = {}
+    new_playlist_headers["name"] = request.form.get("name")
+    new_playlist_headers["description"] = request.form.get("description")
     track_ids = get_songs_from_database(run_length, genres, intensity)
     session["track_ids"] = track_ids
     return redirect(url_for("success", _external=True))

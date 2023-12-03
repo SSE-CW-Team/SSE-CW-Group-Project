@@ -4,6 +4,7 @@ from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from datetime import timedelta
+import bleach
 import os
 
 load_dotenv()
@@ -158,10 +159,15 @@ def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
     intensity = request.form.get("intensity")
+
+    # Add input data to a global dict
     global new_playlist_headers
     new_playlist_headers = {}
-    new_playlist_headers["name"] = request.form.get("name")
-    new_playlist_headers["description"] = request.form.get("description")
+    name = request.form.get("name")
+    new_playlist_headers["name"] = bleach.clean(name)
+    description = request.form.get("description")
+    new_playlist_headers["description"] = bleach.clean(description)
+    # Get track ids
     track_ids = get_songs_from_database(run_length, genres, intensity)
     session["track_ids"] = track_ids
     return redirect(url_for("success", _external=True))

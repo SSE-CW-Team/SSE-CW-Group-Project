@@ -4,7 +4,7 @@ from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from datetime import timedelta
-import bleach
+import bleach # type: ignore
 import os
 
 load_dotenv()

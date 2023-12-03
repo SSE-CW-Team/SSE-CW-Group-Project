@@ -118,7 +118,7 @@ def create_playlist():
     user_id = user_info["id"]
     try:
         sp.user_playlist_create(
-            user=user_id,
+            user_id=user_id,
             name=session['new_playlist_headers']['name'],
             description=session['new_playlist_headers']['description']
         )
@@ -127,9 +127,7 @@ def create_playlist():
     # Check that this is the right playlist
     last_playlist_id = sp.user_playlists(user_id)["items"][0]["id"]
     # ADD ITEMS TO PLAYLIST
-    print("Adding songs to playlist...")
     ids_to_add = session.get("track_ids")[0]
-    print(ids_to_add)
     try:
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:

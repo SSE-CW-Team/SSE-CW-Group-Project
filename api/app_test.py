@@ -20,6 +20,18 @@ def test_login_redirect(client):
     assert response.status_code == 302  # Redirect
 
 
+def test_fetch_songs_redirect(client):
+    sample_data = {
+        "run_length": "3.5",
+        "selectedGenres": "Rock,Pop",
+        "intensity": "high",
+        "name": "My Playlist",
+        "description": "A great playlist",
+    }
+    response = client.post("/fetch_songs", data=sample_data)
+    assert response.status_code == 302
+
+
 def test_success_route(client):
     response = client.get("/success")
     assert response.status_code == 200
@@ -35,12 +47,12 @@ def test_redirect_from_spotify(client):
 def test_positive_mins_returns_data():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
-    intesity = "medium"
-    assert get_songs_from_database(mins, genres, intesity)[0] != []
+    intensity = "medium"
+    assert get_songs_from_database(mins, genres, intensity)[0] != []
 
 
 def test_playlist_length_exceeds_run_length():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
-    intesity = "medium"
-    assert get_songs_from_database(mins, genres, intesity)[1] > mins
+    intensity = "medium"
+    assert get_songs_from_database(mins, genres, intensity)[1] > mins

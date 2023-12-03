@@ -3,6 +3,7 @@ from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from datetime import timedelta
 import time
 import os
 
@@ -13,6 +14,9 @@ app = Flask(__name__)
 client_id = os.environ["CLIENT_ID"]
 client_secret = os.environ["CLIENT_SECRET"]
 app.secret_key = os.environ["SECRET_KEY"]
+
+# Set lifetime of session, to prevent session hijacking
+app.permanent_session_lifetime = timedelta(minutes=10)
 
 # Initialize the Supabase client with project URL and public API key
 supabase_url = os.environ["SUPABASE_URL"]
@@ -76,21 +80,17 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
     return track_ids, total_duration
 
 
+# Request Spotify to log the user in
 @app.route("/generate", methods=["POST", "GET"])
 def generate():
-    # In later stages, the logic to generate the playlist and running route
-    # would be added in a function. Instead, the program has already picked
-    # Oasis - Wonderwall for you and nothing else. Sorry about that.
-    # Request Spotify to log the user in
-    global new_playlist_name
+    session.permanent = True
+    global new_playlist_headers
+    new_playlist_headers = {}
     # I've made these global since they are used in a different function
     # Perhaps there is a better way of doing this.
-    new_playlist_name = "Playlist that is linked to the database!"
-    # Could test for artists that won't be found as well
-    global description
-    description = "Playlist created by Tempo!"
-    global collaborative
-    collaborative = "false"
+    new_playlist_headers["name"] = "Playlist that is linked to the database!"
+    new_playlist_headers["description"] = "Playlist created by Tempo!"
+    new_playlist_headers["collaborative"] = "false"
     sp_oauth = get_spotify_oauth()
     # The authorise_url is where Spotify redirects you once
     # it's finished logging you in. This should be set in our app
@@ -106,7 +106,10 @@ def generate():
 @app.route("/redirect")
 def _redirect():
     sp_oauth = get_spotify_oauth()
-    session.pop("token info")
+    try:
+        session.pop("token info")
+    except KeyError:
+        pass
     code = request.args.get("code", None)  # returns None if request fails
     token_info = sp_oauth.get_access_token(code)
     session["token info"] = token_info  # needed for refreshing token
@@ -140,9 +143,9 @@ def create_playlist():
     try:
         sp.user_playlist_create(
             user_id,
-            new_playlist_name,
-            collaborative=collaborative,
-            description=description,
+            new_playlist_headers["name"],
+            collaborative=new_playlist_headers["collaborative"],
+            description=new_playlist_headers["description"]
         )
     except Exception as e:
         return "Error creating playlist: " + str(e)
@@ -180,8 +183,8 @@ def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
     intensity = request.form.get("intensity")
-    session["track_ids"] = get_songs_from_database(run_length, genres, intensity)[0]
-    print(session["track_ids"])
+    track_ids = get_songs_from_database(run_length, genres, intensity)
+    session["track_ids"] = track_ids
     return redirect(url_for("success", _external=True))
 
 

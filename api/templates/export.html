@@ -3,6 +3,8 @@
   <head> </head>
   <body>
     <h3>Success! You just created a playlist!</h3>
+    <h5><span style="font-weight:normal;">Playlist name:</span> {{ session['new_playlist_headers']['name'] }}</h5>
+    <h5><span style="font-weight:normal;">Playlist description:</span> {{ session['new_playlist_headers']['description'] }}</h5>    
     <table>
       <thead>
         <td>Artist(s)</td>

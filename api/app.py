@@ -170,7 +170,6 @@ def fetch_songs():
         flash("Please select at least one genre")
         return redirect(url_for('index', _external=True))
     else:
-        print(genres)
         return redirect(url_for("success", _external=True))
 
 

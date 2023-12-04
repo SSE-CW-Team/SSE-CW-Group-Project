@@ -1,7 +1,10 @@
 // script.js
 
+
+
 // Function to filter options based on user input
 function filterOptions() {
+  updateLikedSongsValue();
   var input = document.getElementById("genre").value.toLowerCase();
   var options = document.getElementById("genreList").getElementsByTagName("option");
   for (var i = 0; i < options.length; i++) {
@@ -14,6 +17,12 @@ function filterOptions() {
   }
 }
 
+function updateLikedSongsValue() {
+  var slider = document.getElementById("liked_songs");
+  var valueDisplay = document.getElementById("liked_songs_value");
+  var steppedValue = Math.round(slider.value / 20) * 20; // Round to the nearest multiple of 20
+  valueDisplay.innerHTML = steppedValue;
+}
 // Function to add selected option to the list
 function addToSelectedList() {
   var inputElement = document.getElementById("genre");
@@ -105,6 +114,14 @@ function addOptionToSelectedList(selectedItem) {
   updateHiddenInput(); // Update the hidden input when adding an item
 
   printSelectedListState();
+}
+
+function toggleAdvancedOptions() {
+  var advancedSearchContainer = document.getElementById("advanced-search-container");
+  var advancedSearchCheckbox = document.getElementById("advanced-search-checkbox");
+
+  // Toggle the display of the advanced search container based on the checkbox state
+  advancedSearchContainer.style.display = advancedSearchCheckbox.checked ? "block" : "none";
 }
 
 // Function to print the current state of the selected list to the console

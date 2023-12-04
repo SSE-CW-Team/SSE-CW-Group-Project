@@ -154,6 +154,8 @@ def create_playlist():
         return "Error creating playlist: " + str(e)
     # Check that this is the right playlist
     last_playlist_id = sp.user_playlists(user_id)["items"][0]["id"]
+    session['playlist_url'] = 'https://open.spotify.com/playlist/' + \
+        last_playlist_id
     # ADD ITEMS TO PLAYLIST
     ids_to_add = session.get("track_ids")
     try:

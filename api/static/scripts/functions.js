@@ -7,16 +7,22 @@ function filterOptions() {
   updateLikedSongsValue();
   var input = document.getElementById("genre").value.toLowerCase();
   var options = document.getElementById("genreList").getElementsByTagName("option");
+
   for (var i = 0; i < options.length; i++) {
     var optionValue = options[i].value.toLowerCase();
-    if (optionValue.indexOf(input) === -1) {
-      options[i].setAttribute("hidden", true);
+    if (optionValue.startsWith(input)) {
+        options[i].setAttribute("data-match", "true");
     } else {
-      options[i].removeAttribute("hidden");
+        options[i].removeAttribute("data-match");
     }
   }
-}
 
+  // Remove non-matching options from the list
+  var nonMatchingOptions = datalist.querySelectorAll("option:not([data-match])");
+  nonMatchingOptions.forEach(function (option) {
+      option.remove();
+  });
+}
 function updateLikedSongsValue() {
   var slider = document.getElementById("liked_songs");
   var valueDisplay = document.getElementById("liked_songs_value");
@@ -36,7 +42,7 @@ function addToSelectedList() {
 
   // Filter dropdown options based on user input
   var filteredOptions = Array.from(dropdownOptions).filter(
-    (option) => option.value.toLowerCase().indexOf(selectedItem) !== -1
+    (option) => option.value.toLowerCase() === selectedItem
   );
 
   if (filteredOptions.length === 0) {

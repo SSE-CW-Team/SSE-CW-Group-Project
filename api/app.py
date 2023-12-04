@@ -55,7 +55,7 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
     # Query using these inputs
     response = (
         supabase.table("spotify_database")
-        .select("track_id, duration_ms")
+        .select("track_id, duration_ms", "track_name", "artists")
         .gte("energy", energy_lower_threshold)
         .lte("energy", energy_upper_threshold)
         .in_("track_genre", genres)
@@ -65,20 +65,47 @@ def get_songs_from_database(run_length_in_minutes, genres, intensity):
     )
 
     data = response.data
-
-    track_ids = []
+    selected = []
     total_duration = 0
 
     for song in data:
         if total_duration + song["duration_ms"] <= run_length_ms:
-            track_ids.append(song["track_id"])
+            selected.append(song)
             total_duration += song["duration_ms"]
         else:
-            track_ids.append(song["track_id"])
+            selected.append(song)
             total_duration += song["duration_ms"]
             break
 
-    return track_ids, total_duration
+    return selected, total_duration
+
+
+@app.route("/fetch_songs", methods=["POST"])
+def fetch_songs():
+    run_length = float(request.form.get("run_length"))
+    genres = string_to_list(request.form.get("selectedGenres"))
+    intensity = request.form.get("intensity")
+    # Add input data to a global dict
+    session['new_playlist_headers'] = {}
+    name = request.form.get("name")
+    session['new_playlist_headers']['name'] = bleach.clean(name)
+    description = request.form.get("description")
+    session['new_playlist_headers']["description"] = bleach.clean(description)
+    # Get track ids
+    song_data = get_songs_from_database(run_length, genres, intensity)[0]
+    session["track_ids"] = [i['track_id'] for i in song_data]
+    session["titles"] = [i['track_name'] for i in song_data]
+    session["artists"] = [i['artists'].replace(';', ', ') for i in song_data]
+    if not genres[0]:  # No genre selected
+        flash("Please select at least one genre")
+        return redirect(url_for('index', _external=True))
+    else:
+        return redirect(url_for("export", _external=True))
+
+
+@app.route("/export")
+def export():
+    return render_template("export.html")
 
 
 # Request Spotify to log the user in
@@ -128,7 +155,7 @@ def create_playlist():
     # Check that this is the right playlist
     last_playlist_id = sp.user_playlists(user_id)["items"][0]["id"]
     # ADD ITEMS TO PLAYLIST
-    ids_to_add = session.get("track_ids")[0]
+    ids_to_add = session.get("track_ids")
     try:
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:
@@ -149,28 +176,7 @@ def get_spotify_oauth():
 # to your playlist instead?
 @app.route("/success", methods=["GET"])
 def success():
-    return render_template("success_page.html")
-
-
-@app.route("/fetch_songs", methods=["POST"])
-def fetch_songs():
-    run_length = float(request.form.get("run_length"))
-    genres = string_to_list(request.form.get("selectedGenres"))
-    intensity = request.form.get("intensity")
-    # Add input data to a global dict
-    session['new_playlist_headers'] = {}
-    name = request.form.get("name")
-    session['new_playlist_headers']['name'] = bleach.clean(name)
-    description = request.form.get("description")
-    session['new_playlist_headers']["description"] = bleach.clean(description)
-    # Get track ids
-    track_ids = get_songs_from_database(run_length, genres, intensity)
-    session["track_ids"] = track_ids
-    if not genres[0]:  # No genre selected
-        flash("Please select at least one genre")
-        return redirect(url_for('index', _external=True))
-    else:
-        return redirect(url_for("success", _external=True))
+    return render_template("success.html")
 
 
 def string_to_list(input_string):

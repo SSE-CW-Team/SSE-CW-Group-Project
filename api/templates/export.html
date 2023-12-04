@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <h3>Success! You just created a playlist!</h3>
+    <table>
+      <thead>
+        <td>Artist(s)</td>
+        <td>Title</td>
+      </thead>
+      <tbody>
+        {% for i in range(session['track_ids']|length) %}
+        <tr>
+          <td>{{ session['artists'][i] }}</td>
+          <td>{{ session['titles'][i] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form action="/generate" method="post">
+      <button type="submit">Export to Spotify</button>
+    </form>
+  </body>
+</html>

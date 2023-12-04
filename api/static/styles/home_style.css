@@ -51,6 +51,25 @@ body::before {
     gap: 10px; /* Adjust the gap between checkboxes */
 }
 
+.export-button {
+    background-color: #3498db;
+    color: #ecf0f1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .main-button:hover {
+    background-color: #2980b9;
+  }
+
 /* Style for each checkbox label */
 label {
     display: block;
@@ -75,12 +94,34 @@ input[type="checkbox"] {
     overflow-y: auto; /* Enable vertical scrolling within the container */
 }
 
+.container.fixed-container {
+    overflow: hidden; /* Hide the scrollbar for the whole container */
+  }
+
+.table-container {
+    max-height: 55vh; /* Set a specific height for the table container */
+    overflow-y: auto; /* Enable vertical scrolling within the table container */
+  }
+
+.table-container::-webkit-scrollbar {
+width: 8px; /* WebKit */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+background-color: #3498db; /* WebKit thumb color */
+}
+
+
 h1 {
     color: #007bff;
     text-align: center;
     margin-bottom: 30px;
     font-size: 2em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+    text-align: center;
 }
 
 .form-group {
@@ -204,3 +245,33 @@ margin-top: 10px;
 #selectedList li {
 margin-bottom: 5px; 
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ecf0f1;
+    table-layout: fixed;
+    margin-bottom: 20px;
+  }
+  
+  thead td {
+    border-bottom: 2px solid #3498db;
+    text-align: center;
+  }
+  
+  tbody td:nth-child(even) {
+    background-color: #34495e; /* Add a background color for even cells */
+  }
+  
+  tbody td:nth-child(odd) {
+    background-color: #2c3e50; /* Add a background color for odd cells */
+  }
+
+  tbody td {
+    border-bottom: 1px solid #bdc3c7;
+    padding: 10px;
+  }
+  
+  tbody tr:hover {
+    background-color: #34495e;
+  }

@@ -1,26 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head> </head>
+  <head>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Tempo - Your Running Companion</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/home_style.css')}}" />
+    </head>
+  </head>
   <body>
-    <h3>Success! You just created a playlist!</h3>
-    <h5><span style="font-weight:normal;">Playlist name:</span> {{ session['new_playlist_headers']['name'] }}</h5>
-    <h5><span style="font-weight:normal;">Playlist description:</span> {{ session['new_playlist_headers']['description'] }}</h5>    
-    <table>
-      <thead>
-        <td>Artist(s)</td>
-        <td>Title</td>
-      </thead>
-      <tbody>
-        {% for i in range(session['track_ids']|length) %}
-        <tr>
-          <td>{{ session['artists'][i] }}</td>
-          <td>{{ session['titles'][i] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <form action="/generate" method="post">
-      <button type="submit">Export to Spotify</button>
-    </form>
+    <div class="container fixed-container">
+      <h3>Your new playlist:</h3>
+      <h5><span style="font-weight:normal;">Playlist name:</span> {{ session['new_playlist_headers']['name'] }}</h5>
+      <h5><span style="font-weight:normal;">Playlist description:</span> {{ session['new_playlist_headers']['description'] }}</h5>
+      <div class="table-container">
+        <table>
+          <thead>
+            <td>Artist(s)</td>
+            <td>Title</td>
+          </thead>
+          <tbody>
+            {% for i in range(session['track_ids']|length) %}
+            <tr>
+              <td>{{ session['artists'][i] }}</td>
+              <td>{{ session['titles'][i] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      <form action="/generate" method="post">
+        <button type="submit" class="export-button">Export to Spotify</button>
+      </form>
+    </div>
   </body>
 </html>

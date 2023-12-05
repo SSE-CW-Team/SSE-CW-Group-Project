@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tempo - Your Running Companion</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
+    <script src="{{ url_for('static', filename='scripts/metronome.js')}}"></script>
+    <audio id="tickSound" data-url="{{ url_for('static', filename='sounds/tick.mp3') }}"></audio>
   </head>
   <body>
     <div class="container">
@@ -201,7 +203,9 @@
           </div>
           <div class="form-group">
             <label for="tempo">Tempo:</label>
-            <input type="range" id="tempo" name="tempo" min="0" max="100" value="0">
+            <input type="range" id="tempo" name="tempo" min="60" max="200" value="100" oninput="updateTempoValue()">
+            <span id="tempo_value">100</span><span>bpm</span>
+            <button type="button" id="metronome-button" class="metro-btn" onclick="toggleMetronome()">⏵</button>
           </div>
           <div class="form-group">
             <label for="danceability">Danceability:</label>

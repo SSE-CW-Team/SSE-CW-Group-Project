@@ -31,6 +31,8 @@ function updateLikedSongsValue() {
 }
 // Function to add selected option to the list
 function addToSelectedList() {
+  var genres_text = document.getElementById("selectedGenresText");
+  genres_text.innerHTML = "Selected genres:"
   var inputElement = document.getElementById("genre");
 
   // Check if the input box is empty

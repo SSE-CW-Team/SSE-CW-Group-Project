@@ -23,7 +23,7 @@
         </div>
         <div class="form-group">
           <label for="genre">Music Genres to be included:</label>
-          <input type="text" id="genre" name="genre" list="genreList" oninput="filterOptions()" />
+          <input type="text" id="genre" name="genre" list="genreList" oninput="filterOptions()" placeholder="Type in a genre..." />
           <datalist id="genreList">
             <option value="Acoustic"></option>
             <option value="Afrobeat"></option>
@@ -144,7 +144,7 @@
 
           <!-- Selected Options List -->
           <div id="selectedOptions">
-            <label for="selectedList">Selected genres:</label>
+            <label for="selectedList" id="selectedGenresText">Selected genres will appear here:</label>
             <ul id="selectedList"></ul>
           </div>
           {% with messages = get_flashed_messages() %}

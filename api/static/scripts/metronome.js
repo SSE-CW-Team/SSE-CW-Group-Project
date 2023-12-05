@@ -1,17 +1,18 @@
-let intervalId;
 let audioContext;
+let tickBuffer;
+let tickSource;
 let isMetronomePlaying = false;
+let baseVolume = 1; // Adjust this value to control the base volume
 
 function updateTempoValue() {
   const tempoInput = document.getElementById("tempo");
   const tempoValueSpan = document.getElementById("tempo_value");
-  const tempo = tempoInput.value;
+  const tempo = parseInt(tempoInput.value, 10);
   tempoValueSpan.textContent = tempo;
 
-  // If the metronome is playing, update the tempo dynamically
   if (isMetronomePlaying) {
-    stopMetronome();
-    startMetronome();
+    updatePlaybackRate(tempo);
+    updateVolume(tempo);
   }
 }
 
@@ -20,7 +21,9 @@ function toggleMetronome() {
     stopMetronome();
     document.getElementById("metronome-button").textContent = "⏵";
   } else {
-    startMetronome();
+    const tempoInput = document.getElementById("tempo");
+    const tempo = parseInt(tempoInput.value, 10);
+    startMetronome(tempo);
     document.getElementById("metronome-button").textContent = "⏸";
   }
 
@@ -28,43 +31,81 @@ function toggleMetronome() {
   isMetronomePlaying = !isMetronomePlaying;
 }
 
-function startMetronome() {
-  const tempoInput = document.getElementById("tempo");
-  var tempo = parseInt(tempoInput.value, 10);
+function loadAudio() {
+  const tickSoundUrl = document.getElementById("tickSound").dataset.url;
 
-  // Create or recreate the audio context
+  return fetch(tickSoundUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.arrayBuffer();
+    })
+    .then(buffer => audioContext.decodeAudioData(buffer));
+}
+
+function createTickSource() {
+  tickSource = audioContext.createBufferSource();
+  tickSource.buffer = tickBuffer;
   
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  var count = 0;
+  // Create a gain node and connect it to the audio context
+  tickSource.gainNode = audioContext.createGain();
+  tickSource.connect(tickSource.gainNode);
+  tickSource.gainNode.connect(audioContext.destination);
+  
+  tickSource.loop = true;
+}
 
-  intervalId = setInterval(() => {
-    // Check if audio context is available
-    if (!audioContext) {
-      stopMetronome();
-      startMetronome();
-    }
+function startMetronome(tempo) {
+  stopMetronome(); // Stop any existing metronome
 
-    tickSound = audioContext.createBufferSource();
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  } catch (error) {
+    console.error("Error creating AudioContext:", error);
+    return;
+  }
 
-    const tickSoundUrl = document.getElementById("tickSound").dataset.url;
+  if (!audioContext) {
+    stopMetronome();
+    startMetronome(tempo);
+    return;
+  }
 
-    fetch(tickSoundUrl)
-      .then(response => response.arrayBuffer())
-      .then(buffer => audioContext.decodeAudioData(buffer))
-      .then(audioBuffer => {
-        tickSound.buffer = audioBuffer;
-        tickSound.connect(audioContext.destination);
-        tickSound.start();
-      })
-      .catch(error => console.error('Error loading audio file:', error));
+  loadAudio()
+    .then(audioBuffer => {
+      tickBuffer = audioBuffer;
+      createTickSource();
+      updatePlaybackRate(tempo);
+      updateVolume(tempo);
+      tickSource.start();
+    })
+    .catch(error => console.error('Error loading audio file:', error));
+}
 
-  }, (60 / tempo) * 1000); // Convert tempo to milliseconds
+function updatePlaybackRate(tempo) {
+  tickSource.playbackRate.value = calculatePlaybackRate(tempo);
+}
+
+function updateVolume(tempo) {
+  // Adjust volume based on the tempo
+  const maxTempo = 200; // Adjust this value if needed
+  const volumeAdjustment = baseVolume * (1 - Math.min(tempo, maxTempo) / maxTempo);
+  tickSource.gainNode.gain.value = baseVolume - volumeAdjustment;
+}
+
+function calculatePlaybackRate(tempo) {
+  const baseTempo = 60;
+  return tempo / baseTempo;
 }
 
 function stopMetronome() {
-  if (intervalId) {
-    clearInterval(intervalId);
+  if (tickSource) {
+    tickSource.stop();
+    tickSource.disconnect();
+    tickSource = null;
   }
+
   if (audioContext && audioContext.state !== 'closed') {
     // Check if the AudioContext is not closed
     audioContext.close().then(() => {

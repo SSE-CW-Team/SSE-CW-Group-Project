@@ -124,6 +124,11 @@ def fetch_songs():
     session["track_ids"] = [i["track_id"] for i in song_data]
     session["titles"] = [i["track_name"] for i in song_data]
     session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
+    session["lengths"] = [
+        seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
+    ]
+
+    print(session["lengths"])
 
     if not genres[0]:  # No genre selected
         flash("Please select at least one genre")
@@ -218,6 +223,17 @@ def string_to_list(input_string):
     result_list = input_string.split(", ")
     result_list = [item.strip().lower() for item in result_list]
     return result_list
+
+
+def seconds_to_mm_ss(seconds):
+    # Calculate minutes and seconds
+    minutes = seconds // 60
+    remaining_seconds = seconds % 60
+
+    # Format the result as mm:ss
+    result = "{:02d}:{:02d}".format(minutes, remaining_seconds)
+
+    return result
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
     <audio id="tickSound" data-url="{{ url_for('static', filename='sounds/tick.mp3') }}"></audio>
   </head>
   <body>
-    <div class="container">
+    <div class="container" id = "home-page-container">
       <h1>Tempo: Running Playlist Generator</h1>
       <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
       <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">

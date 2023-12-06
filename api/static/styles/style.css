@@ -60,6 +60,14 @@ body::before {
     gap: 10px; /* Adjust the gap between checkboxes */
 }
 
+.id-column, .length-column {
+  width: 50px; /* Adjust the width of ID and Length columns */
+}
+
+.form-container {
+  margin-top: 20px;
+}
+
 .export-button {
     background-color: #198754; /* Darker green */
     color: #ffffff; /* White text */
@@ -95,7 +103,7 @@ input[type="checkbox"] {
 }
 
 .container {
-    background-color: #1a1a1a; /* Dark background color */
+    background-color: rgba(26, 26, 26, 0.8); /* Dark background color */
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -106,6 +114,16 @@ input[type="checkbox"] {
     height: 80vh; /* Set a specific height, adjust as needed */
     overflow-y: auto; /* Enable vertical scrolling within the container */
     left: 5%;
+    max-width: 50%; /* Adjust the maximum width as needed */
+    margin: 0 auto;
+}
+
+.fixed-headers {
+  position: sticky;
+  top: 0;
+  background-color: rgba(26, 26, 26, 0.8); /* Dark background color with opacity */
+  z-index: 1;
+  border-radius: 10px 10px 0 0;
 }
 
 .container.fixed-container {
@@ -149,6 +167,19 @@ h3 {
     font-weight: bold;
     color: #ffffff; /* White color for form labels */
 }
+
+.playlist-table {
+  max-height: 47%; /* Adjust the maximum height as needed */
+  overflow-y: auto;
+  table-layout: fixed; /* Fix the table layout */
+  width: 100%; /* Make the table take full width */
+}
+
+.playlist-table th, .playlist-table td {
+  padding: 8px;
+  text-align: center;
+}
+
 
 .form-group input,
 .form-group select {
@@ -309,4 +340,8 @@ table {
   
   tbody tr:hover {
     background-color: #34495e;
+  }
+  
+  #home-page-container {
+    width: 33%;
   }

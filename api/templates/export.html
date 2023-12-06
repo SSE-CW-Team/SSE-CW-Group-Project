@@ -1,33 +1,50 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Tempo - Your Running Companion</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
-      <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
-    </head>
-  </head>
-  <body>
-    <div class="container fixed-container">
-      <a href="/" class="back-arrow" >&#9664; Back</a>
-      <h3>Your new playlist:</h3>
-      <div class="table-container">
-        <table>
-          <thead>
-            <td>Artist(s)</td>
-            <td>Title</td>
-          </thead>
-          <tbody>
-            {% for i in range(session['track_ids']|length) %}
-            <tr>
-              <td>{{ session['artists'][i] }}</td>
-              <td>{{ session['titles'][i] }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tempo - Your Running Companion</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
+  <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
+</head>
+
+<body>
+  <div class="container">
+    <a href="/" class="back-arrow">&#9664; Back</a>
+    <h3>Your new playlist:</h3>
+
+    <!-- Fixed headers div -->
+    <div class="fixed-headers">
+      <table class="table-container">
+        <thead>
+          <tr>
+            <th class="id-column">ID</th>
+            <th>Artist(s)</th>
+            <th>Title</th>
+            <th class="length-column">Length</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <!-- Table container div -->
+    <div class="playlist-table">
+      <table class="table-container">
+        <tbody>
+          {% for i in range(session['track_ids']|length) %}
+          <tr>
+            <td class="id-column">{{ i+1 }}</td>
+            <td>{{ session['artists'][i] }}</td>
+            <td>{{ session['titles'][i] }}</td>
+            <td class="length-column">{{ session['lengths'][i] }}</td> <!-- Replace with the actual song length -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-container">
       <form action="/generate" method="post">
         <div class="form-group">
           <label for="name">Playlist name</label>
@@ -39,6 +56,8 @@
         </div>
         <button type="submit" class="export-button">Export to Spotify</button>
       </form>
-    </div>
-  </body>
+    </div> <!-- Close form-container div -->
+  </div>
+</body>
+
 </html>

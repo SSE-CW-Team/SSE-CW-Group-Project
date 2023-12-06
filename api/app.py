@@ -49,7 +49,7 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
     )
 
     # Add conditions based on boolean flags
-    if not bool_flags["includeExplicit"]:
+    if bool_flags["excludeExplicit"]:
         query = query.eq("explicit", False)
 
     if bool_flags["instrumentalOnly"]:
@@ -190,7 +190,7 @@ def fetch_songs():
 
     # Dictionary for boolean flags
     bool_flags = {
-        "includeExplicit": request.form.get("includeExplicit") == 'true',
+        "excludeExplicit": request.form.get("excludeExplicit") == 'true',
         "instrumentalOnly": request.form.get("instrumentalOnly") == 'true',
         "excludeAcoustic": request.form.get("excludeAcoustic") == 'true',
         "excludeLive": request.form.get("excludeLive") == 'true'

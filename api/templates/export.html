@@ -7,10 +7,12 @@
   <title>Tempo - Your Running Companion</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
   <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-  <div class="container">
+  <section class = "content">
+  <div class="export-container" id = "left">
     <a href="/" class="back-arrow">&#9664; Back</a>
     <h3>Your new playlist:</h3>
 
@@ -58,6 +60,97 @@
       </form>
     </div> <!-- Close form-container div -->
   </div>
-</body>
+  
+  <div class="export-container" id = "right">
+    <div class="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+       
+  </div>
+
+
+</section>
+
+<script>
+  // Load data passed from Flask
+  var songData = {{ graph_data | tojson | safe }};
+
+  // Extract labels, data, and song names for the chart
+  var distances = songData.map(function (item) {
+      return item.distance;
+  });
+
+  var runTimes = songData.map(function (item) {
+      return item.time;
+  });
+
+  var songNames = songData.map(function (item) {
+      return item.name;
+  });
+
+  // Create the chart
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: distances,
+          datasets: [{
+              label: 'Run Time',
+              data: runTimes,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
+              fill: false,
+              pointRadius: 5, // Adjust the size of the dots
+              pointHoverRadius: 7, // Adjust the size of the dots on hover
+              pointStyle: 'circle', // Use circle as the point style
+          }]
+      },
+      options: {
+          scales: {
+              xAxes: [{
+                  type: 'linear',
+                  position: 'bottom',
+                  scaleLabel: {
+                      display: true,
+                      labelString: 'Distance'
+                  },
+                  ticks: {
+                      stepSize: 5, // Set the step size for the distance axis
+                      beginAtZero: true // Start the axis at zero
+                  },
+              }],
+              yAxes: [{
+                  type: 'time',
+                  position: 'left',
+                  scaleLabel: {
+                      display: true,
+                      labelString: 'Run Time'
+                  },
+                  ticks: {
+                      stepSize: 5, // Set the step size for the distance axis
+                      beginAtZero: true // Start the axis at zero
+                  },
+              }]
+          }
+      }
+  });
+
+  // Draw song names next to each data point
+  var meta = myChart.getDatasetMeta(0);
+  var ctx = myChart.chart.ctx;
+  ctx.save();
+  ctx.fillStyle = 'white';
+  ctx.font = '12px Arial';
+
+  meta.data.forEach(function (point, index) {
+      var x = point._model.x;
+      var y = point._model.y;
+      var songName = songNames[index];
+      ctx.fillText(songName, x, y); // Adjust the positioning as needed
+  });
+
+  ctx.restore();
+</script>
+
 
 </html>

@@ -1,3 +1,16 @@
+.content {
+  display: flex;
+}
+
+#left {
+  flex: 1;
+}
+
+#right {
+  flex: 1;
+}
+
+
 .advanced-search-container {
     display: none;
   }
@@ -103,19 +116,22 @@ input[type="checkbox"] {
 }
 
 .container {
-    background-color: rgba(26, 26, 26, 0.8); /* Dark background color */
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 500px;
     position: fixed;
-    top: 5vh;
-    height: 80vh; /* Set a specific height, adjust as needed */
-    overflow-y: auto; /* Enable vertical scrolling within the container */
-    left: 5%;
-    max-width: 50%; /* Adjust the maximum width as needed */
-    margin: 0 auto;
+}
+
+.container, .export-container {
+  background-color: rgba(26, 26, 26, 0.8); /* Dark background color */
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 500px;
+  top: 5vh;
+  height: 80vh; /* Set a specific height, adjust as needed */
+  overflow-y: auto; /* Enable vertical scrolling within the container */
+  left: 5%;
+  max-width: 50%; /* Adjust the maximum width as needed */
+  margin: 0 auto;
 }
 
 .fixed-headers {

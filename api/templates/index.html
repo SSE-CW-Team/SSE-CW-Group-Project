@@ -14,6 +14,10 @@
       <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
       <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
         <div class="form-group">
+          <label for="distance">Approximate distance (km)</label>
+          <input type="number" id="distance" name="distance" min="0" max="100" required />
+        </div>
+        <div class="form-group">
           <label for="run_length">Approximate running time (mins)</label>
           <input type="number" id="run_length" name="run_length" min="0" max="200" required />
         </div>

@@ -34,7 +34,9 @@ def index():
     return render_template("index.html")
 
 
-def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_flags):
+def get_songs_from_database(
+    run_length_in_minutes, genres, slider_values, bool_flags, distance
+):
     # Variables
     run_length_ms = run_length_in_minutes * 60000
     # Construct query
@@ -94,12 +96,27 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
             selected.append(song)
             total_duration += song["duration_ms"]
             break
-    return selected, total_duration
+
+    # Generate data for graph:
+    graph_data = []
+    current_time = 0
+    dist = 0
+
+    for song in selected:
+        song_length = int(song["duration_ms"]) / 1000
+        current_time += song_length
+        dist += distance * (song_length / (total_duration / 1000))
+        graph_data.append(
+            {"name": song["track_name"], "time": current_time, "distance": dist}
+        )
+
+    return selected, total_duration, graph_data
 
 
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
     run_length = float(request.form.get("run_length"))
+    distance = float(request.form.get("distance"))
     genres = string_to_list(request.form.get("selectedGenres"))
 
     # Dictionary for slider values and thresholds
@@ -118,17 +135,19 @@ def fetch_songs():
         "includeLive": request.form.get("includeLive") == "true",
     }
 
-    song_data = get_songs_from_database(run_length, genres, slider_values, bool_flags)[
-        0
-    ]
+    requested_data = get_songs_from_database(
+        run_length, genres, slider_values, bool_flags, distance
+    )
+
+    song_data = requested_data[0]
+    session["graph_data"] = requested_data[2]
+
     session["track_ids"] = [i["track_id"] for i in song_data]
     session["titles"] = [i["track_name"] for i in song_data]
     session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
     session["lengths"] = [
         seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
     ]
-
-    print(session["lengths"])
 
     if not genres[0]:  # No genre selected
         flash("Please select at least one genre")
@@ -139,7 +158,8 @@ def fetch_songs():
 
 @app.route("/export")
 def export():
-    return render_template("export.html")
+    print("here")
+    return render_template("export.html", graph_data=session["graph_data"])
 
 
 # Request Spotify to log the user in

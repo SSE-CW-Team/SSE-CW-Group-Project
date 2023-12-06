@@ -49,10 +49,10 @@ def test_positive_mins_returns_data():
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
     bool_flags = {
-        "excludeExplicit": False,
+        "allowExplicit": False,
         "instrumentalOnly": False,
-        "excludeAcoustic": False,
-        "excludeLive": False,
+        "includeAcoustic": False,
+        "includeLive": False,
     }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
 
@@ -62,9 +62,9 @@ def test_playlist_length_exceeds_run_length():
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
     bool_flags = {
-        "excludeExplicit": False,
+        "allowExplicit": False,
         "instrumentalOnly": False,
-        "excludeAcoustic": False,
-        "excludeLive": False,
+        "includeAcoustic": False,
+        "includeLive": False,
     }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

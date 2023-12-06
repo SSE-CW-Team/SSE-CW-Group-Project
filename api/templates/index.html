@@ -173,19 +173,19 @@
         <div id="advanced-search-container" class="advanced-search-container">
           <div class="checkbox-container">
             <label>
-                <input type="checkbox" name="excludeExplicit" id="excludeExplicit"> Exclude explicit songs
+                <input type="checkbox" name="allowExplicit" id="allowExplicit"> Include explicit songs
             </label>
         
             <label>
-                <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly"> Only include instrumentals
+                <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly"> Include instrumentals
             </label>
         
             <label>
-                <input type="checkbox" name="excludeAcoustic" id="excludeAcoustic"> Exclude acoustic music
+                <input type="checkbox" name="includeAcoustic" id="includeAcoustic"> Include acoustic
             </label>
         
             <label>
-                <input type="checkbox" name="excludeLive" id="excludeLive"> Exclude live versions
+                <input type="checkbox" name="includeLive" id="includeLive"> Include live versions
             </label>
         </div>
           <div class="form-group">
@@ -199,6 +199,14 @@
           <div class="form-group">
             <label for="energy">Energy:</label>
             <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="intensity">Running Intensity:</label>
+            <select id="intensity" name="intensity">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
         </div>
         <input type="hidden" id="selectedGenres" name="selectedGenres" value="" />

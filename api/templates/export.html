@@ -6,14 +6,13 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Tempo - Your Running Companion</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
+      <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
     </head>
   </head>
   <body>
     <div class="container fixed-container">
       <a href="/" class="back-arrow" >&#9664; Back</a>
       <h3>Your new playlist:</h3>
-      <h5><span style="font-weight:normal;">Playlist name:</span> {{ session['new_playlist_headers']['name'] }}</h5>
-      <h5><span style="font-weight:normal;">Playlist description:</span> {{ session['new_playlist_headers']['description'] }}</h5>
       <div class="table-container">
         <table>
           <thead>
@@ -30,6 +29,14 @@
           </tbody>
         </table>
       <form action="/generate" method="post">
+        <div class="form-group">
+          <label for="name">Playlist name</label>
+          <input type="text" id="name" name="name" value="New playlist created with Tempo!" maxlength="100" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Playlist description</label>
+          <input type="text" id="description" name="description" value="" maxlength="300">
+        </div>
         <button type="submit" class="export-button">Export to Spotify</button>
       </form>
     </div>

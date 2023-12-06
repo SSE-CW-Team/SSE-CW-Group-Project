@@ -14,10 +14,6 @@
       <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
       <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
         <div class="form-group">
-          <label for="distance">Distance (km):</label>
-          <input type="number" id="distance" name="distance" min="0" max="100" required />
-        </div>
-        <div class="form-group">
           <label for="run_length">Approximate running time (mins)</label>
           <input type="number" id="run_length" name="run_length" min="0" max="200" required />
         </div>
@@ -158,20 +154,15 @@
           <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
         </div>
         <div class="form-group">
-          <label for="intensity">Running Intensity:</label>
-          <select id="intensity" name="intensity">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
+          <label for="liked_songs">Percentage of liked songs:</label>
+          <input type="range" id="liked_songs" name="liked_songs" min="0" max="100" value="0" step="20" oninput="updateLikedSongsValue()">
+          <span id="liked_songs_value">0</span><span>%</span>
         </div>
         <div class="form-group">
-          <label for="name">Playlist name</label>
-          <input type="text" id="name" name="name" value="New playlist created with Tempo!" maxlength="100" required>
-        </div>
-        <div class="form-group">
-          <label for="description">Playlist description</label>
-          <input type="text" id="description" name="description" value="" maxlength="300">
+          <label for="tempo">Tempo:</label>
+          <input type="range" id="tempo" name="tempoValue" min="60" max="200" value="100" oninput="updateTempoValue()">
+          <span id="tempo_value">100</span><span>bpm</span>
+          <button type="button" id="metronome-button" class="metro-btn" onclick="toggleMetronome()">⏵</button>
         </div>
         <div class="advanced-form-group">
           <label>
@@ -202,12 +193,6 @@
             <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="0">
           </div>
           <div class="form-group">
-            <label for="tempo">Tempo:</label>
-            <input type="range" id="tempo" name="tempoValue" min="60" max="200" value="100" oninput="updateTempoValue()">
-            <span id="tempo_value">100</span><span>bpm</span>
-            <button type="button" id="metronome-button" class="metro-btn" onclick="toggleMetronome()">⏵</button>
-          </div>
-          <div class="form-group">
             <label for="danceability">Danceability:</label>
             <input type="range" id="danceability" name="danceabilityValue" min="0" max="1" value="0.5" step="0.01">
           </div>
@@ -216,9 +201,12 @@
             <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01">
           </div>
           <div class="form-group">
-            <label for="liked_songs">Percentage of liked songs:</label>
-            <input type="range" id="liked_songs" name="liked_songs" min="0" max="100" value="0" step="20" oninput="updateLikedSongsValue()">
-            <span id="liked_songs_value">0</span><span>%</span>
+            <label for="intensity">Running Intensity:</label>
+            <select id="intensity" name="intensity">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
         </div>
         <input type="hidden" id="selectedGenres" name="selectedGenres" value="" />
@@ -226,4 +214,3 @@
       </form>
     </div>
   </body>
-</html>

@@ -37,71 +37,106 @@ def index():
     return render_template("index.html")
 
 
-def get_songs_from_database(run_length_in_minutes, genres, intensity):
-    # Variables (You can modify these based on user input)
+def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_flags):
+    # Variables
     run_length_ms = run_length_in_minutes * 60000
 
-    # Energy thresholds for the high intensity
-    if intensity == "high":
-        energy_upper_threshold = 0.9
-        energy_lower_threshold = 0.7
-    elif intensity == "medium":
-        energy_upper_threshold = 0.7
-        energy_lower_threshold = 0.5
-    elif intensity == "low":
-        energy_upper_threshold = 0.5
-        energy_lower_threshold = 0.3
-
-    # Query using these inputs
-    response = (
+    # Construct query
+    query = (
         supabase.table("spotify_database")
-        .select("track_id, duration_ms", "track_name", "artists")
-        .gte("energy", energy_lower_threshold)
-        .lte("energy", energy_upper_threshold)
+        .select("track_id, duration_ms")
         .in_("track_genre", genres)
-        .order("popularity", desc=True)
-        .limit(300)
-        .execute()
     )
 
-    data = response.data
-    selected = []
-    total_duration = 0
+    # Add conditions for sliders
+    if "energy" in slider_values:
+        energy_lower = max(0, slider_values["energy"][0] - slider_values["energy"][1])
+        energy_upper = min(1, slider_values["energy"][0] + slider_values["energy"][1])
+        query = query.gte("energy", energy_lower).lte("energy", energy_upper)
 
+    if "popularity" in slider_values:
+        popularity_lower = max(0, slider_values["popularity"][0] - slider_values["popularity"][1])
+        popularity_upper = min(100, slider_values["popularity"][0] + slider_values["popularity"][
+            1])
+        query = query.gte("popularity", popularity_lower).lte("popularity", popularity_upper)
+
+    if "danceability" in slider_values:
+        danceability_lower = max(0, slider_values["danceability"][0] - slider_values["danceability"][1])
+        danceability_upper = min(1, slider_values["danceability"][0] + slider_values["danceability"][1])
+        query = query.gte("danceability", danceability_lower).lte("danceability", danceability_upper)
+
+    if "tempo" in slider_values:
+        tempo_lower = max(0, slider_values["tempo"][0] - slider_values["tempo"][1])
+        tempo_upper = min(1, slider_values["tempo"][0] + slider_values["tempo"][1])
+        query = query.gte("tempo", tempo_lower).lte("tempo", tempo_upper)
+
+    # Add conditions based on boolean flags
+    if not bool_flags["allowExplicit"]:
+        query = query.eq("explicit", False)
+
+    if bool_flags["instrumentalOnly"]:  # Adjust thresholds as appropriate
+        query = query.gte("instrumentalness", 0.5)
+
+    if bool_flags["includeAcoustic"]:
+        query = query.gte("acousticness", 0.5)
+
+    if bool_flags["includeLive"]:
+        query = query.gte("liveness", 0.5)
+
+    # Execute query
+    response = query.order("popularity", desc=True).limit(300).execute()
+    data = response.data
+
+    # Process data
+    track_ids = []
+    total_duration = 0
     for song in data:
         if total_duration + song["duration_ms"] <= run_length_ms:
-            selected.append(song)
+            track_ids.append(song["track_id"])
             total_duration += song["duration_ms"]
         else:
-            selected.append(song)
-            total_duration += song["duration_ms"]
             break
 
-    return selected, total_duration
+    return track_ids, total_duration
 
 
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
-    intensity = request.form.get("intensity")
-    # Add input data to a global dict
-    session['new_playlist_headers'] = {}
-    name = request.form.get("name")
-    session['new_playlist_headers']['name'] = bleach.clean(name)
-    description = request.form.get("description")
-    session['new_playlist_headers']["description"] = bleach.clean(description)
-    # Get track ids
-    song_data = get_songs_from_database(run_length, genres, intensity)[0]
-    session["track_ids"] = [i['track_id'] for i in song_data]
-    session["titles"] = [i['track_name'] for i in song_data]
-    session["artists"] = [i['artists'].replace(';', ', ') for i in song_data]
+
+    # Print data received from form
+    print("Received form data:", request.form)
+
+    # Dictionary for slider values and thresholds
+    slider_values = {
+        "energy": (float(request.form.get("energyValue")), 0.2),
+        "popularity": (float(request.form.get("popularityValue")), 20),
+        "danceability": (float(request.form.get("danceabilityValue")), 0.2),
+        "tempo": (float(request.form.get("tempoValue")), 20)
+    }
+
+    # Dictionary for boolean flags
+    bool_flags = {
+        "allowExplicit": request.form.get("allowExplicit") == 'true',
+        "instrumentalOnly": request.form.get("instrumentalOnly") == 'true',
+        "includeAcoustic": request.form.get("includeAcoustic") == 'true',
+        "includeLive": request.form.get("includeLive") == 'true'
+    }
+
+    session['new_playlist_headers'] = {
+        'name': bleach.clean(request.form.get("name", "")),
+        'description': bleach.clean(request.form.get("description", ""))
+    }
+
+    track_ids = get_songs_from_database(run_length, genres, slider_values, bool_flags)
+    session["track_ids"] = track_ids
+
     if not genres[0]:  # No genre selected
         flash("Please select at least one genre")
         return redirect(url_for('index', _external=True))
     else:
-        return redirect(url_for("export", _external=True))
-
+        return redirect(url_for("success", _external=True))
 
 @app.route("/export")
 def export():

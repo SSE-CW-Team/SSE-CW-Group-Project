@@ -199,17 +199,21 @@
         </div>
           <div class="form-group">
             <label for="popularity">Popularity:</label>
-            <input type="range" id="popularity" name="popularity" min="0" max="100" value="0">
+            <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="0">
           </div>
           <div class="form-group">
             <label for="tempo">Tempo:</label>
-            <input type="range" id="tempo" name="tempo" min="60" max="200" value="100" oninput="updateTempoValue()">
+            <input type="range" id="tempo" name="tempoValue" min="60" max="200" value="100" oninput="updateTempoValue()">
             <span id="tempo_value">100</span><span>bpm</span>
             <button type="button" id="metronome-button" class="metro-btn" onclick="toggleMetronome()">⏵</button>
           </div>
           <div class="form-group">
             <label for="danceability">Danceability:</label>
-            <input type="range" id="danceability" name="danceability" min="0" max="100" value="0">
+            <input type="range" id="danceability" name="danceabilityValue" min="0" max="1" value="0.5" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="energy">Energy:</label>
+            <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01">
           </div>
           <div class="form-group">
             <label for="liked_songs">Percentage of liked songs:</label>

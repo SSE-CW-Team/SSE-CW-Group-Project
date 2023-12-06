@@ -169,7 +169,7 @@ def get_spotify_oauth():
 # to your playlist instead?
 @app.route("/success", methods=["GET"])
 def success():
-    return render_template("success_page.html")
+    return render_template("success.html")
 
 
 @app.route("/fetch_songs", methods=["POST"])

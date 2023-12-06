@@ -1,7 +1,4 @@
-from flask import (
-    Flask, render_template, request,
-    redirect, url_for, session, flash
-)
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client
@@ -55,15 +52,26 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
         query = query.gte("energy", energy_lower).lte("energy", energy_upper)
 
     if "popularity" in slider_values:
-        popularity_lower = max(0, slider_values["popularity"][0] - slider_values["popularity"][1])
-        popularity_upper = min(100, slider_values["popularity"][0] + slider_values["popularity"][
-            1])
-        query = query.gte("popularity", popularity_lower).lte("popularity", popularity_upper)
+        popularity_lower = max(
+            0, slider_values["popularity"][0] - slider_values["popularity"][1]
+        )
+        popularity_upper = min(
+            100, slider_values["popularity"][0] + slider_values["popularity"][1]
+        )
+        query = query.gte("popularity", popularity_lower).lte(
+            "popularity", popularity_upper
+        )
 
     if "danceability" in slider_values:
-        danceability_lower = max(0, slider_values["danceability"][0] - slider_values["danceability"][1])
-        danceability_upper = min(1, slider_values["danceability"][0] + slider_values["danceability"][1])
-        query = query.gte("danceability", danceability_lower).lte("danceability", danceability_upper)
+        danceability_lower = max(
+            0, slider_values["danceability"][0] - slider_values["danceability"][1]
+        )
+        danceability_upper = min(
+            1, slider_values["danceability"][0] + slider_values["danceability"][1]
+        )
+        query = query.gte("danceability", danceability_lower).lte(
+            "danceability", danceability_upper
+        )
 
     if "loudness" in slider_values:
         loudness_lower = slider_values["loudness"][0] - slider_values["loudness"][1]
@@ -144,8 +152,8 @@ def create_playlist():
     try:
         sp.user_playlist_create(
             user_id,
-            name=session['new_playlist_headers']['name'],
-            description=session['new_playlist_headers']['description']
+            name=session["new_playlist_headers"]["name"],
+            description=session["new_playlist_headers"]["description"],
         )
     except Exception as e:
         return "Error creating playlist: " + str(e)
@@ -187,20 +195,20 @@ def fetch_songs():
         "popularity": (float(request.form.get("popularityValue")), 20),
         "danceability": (float(request.form.get("danceabilityValue")), 0.2),
         "loudness": (float(request.form.get("loudnessValue")), 10),
-        "tempo": (float(request.form.get("loudnessValue")), 20)
+        "tempo": (float(request.form.get("loudnessValue")), 20),
     }
 
     # Dictionary for boolean flags
     bool_flags = {
-        "allowExplicit": request.form.get("allowExplicit") == 'true',
-        "instrumentalOnly": request.form.get("instrumentalOnly") == 'true',
-        "includeAcoustic": request.form.get("includeAcoustic") == 'true',
-        "includeLive": request.form.get("includeLive") == 'true'
+        "allowExplicit": request.form.get("allowExplicit") == "true",
+        "instrumentalOnly": request.form.get("instrumentalOnly") == "true",
+        "includeAcoustic": request.form.get("includeAcoustic") == "true",
+        "includeLive": request.form.get("includeLive") == "true",
     }
 
-    session['new_playlist_headers'] = {
-        'name': bleach.clean(request.form.get("name", "")),
-        'description': bleach.clean(request.form.get("description", ""))
+    session["new_playlist_headers"] = {
+        "name": bleach.clean(request.form.get("name", "")),
+        "description": bleach.clean(request.form.get("description", "")),
     }
 
     track_ids = get_songs_from_database(run_length, genres, slider_values, bool_flags)
@@ -208,7 +216,7 @@ def fetch_songs():
 
     if not genres[0]:  # No genre selected
         flash("Please select at least one genre")
-        return redirect(url_for('index', _external=True))
+        return redirect(url_for("index", _external=True))
     else:
         return redirect(url_for("success", _external=True))
 

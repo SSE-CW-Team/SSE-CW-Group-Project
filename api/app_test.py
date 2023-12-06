@@ -3,12 +3,16 @@ from app import get_songs_from_database
 import pytest
 
 sample_data = {
-        "run_length": "3.5",
-        "selectedGenres": "Rock, Pop",
-        "intensity": "high",
-        "name": "My Playlist",
-        "description": "A great playlist",
-    }
+    "run_length": "3.5",
+    "selectedGenres": "Rock, Pop",
+    "intensity": "high",
+    "name": "My Playlist",
+    "description": "A great playlist",
+    "tempoValue": "100",
+    "energyValue": "0.5",
+    "danceabilityValue": "0.5",
+    "popularityValue": "70",
+}
 
 
 @pytest.fixture
@@ -24,7 +28,9 @@ def test_welcome_route(client):
 
 
 def test_login_redirect(client):
-    response = client.get("/generate")
+    response = client.post(
+        "/generate", data={"name": "my_name", "description": "my_description"}
+    )
     assert response.status_code == 302  # Redirect
 
 
@@ -41,12 +47,24 @@ def test_success_route(client):
 def test_positive_mins_returns_data():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
-    intensity = "medium"
-    assert get_songs_from_database(mins, genres, intensity)[0] != []
+    slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
+    bool_flags = {
+        "allowExplicit": False,
+        "instrumentalOnly": False,
+        "includeAcoustic": False,
+        "includeLive": False,
+    }
+    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
 
 
 def test_playlist_length_exceeds_run_length():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
-    intensity = "medium"
-    assert get_songs_from_database(mins, genres, intensity)[1] > mins
+    slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
+    bool_flags = {
+        "allowExplicit": False,
+        "instrumentalOnly": False,
+        "includeAcoustic": False,
+        "includeLive": False,
+    }
+    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

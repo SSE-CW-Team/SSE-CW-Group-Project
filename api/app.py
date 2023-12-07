@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
-from supabase import create_client, Client
-from dotenv import load_dotenv
+from supabase import create_client, Client  # type: ignore
+from dotenv import load_dotenv  # type: ignore
 from datetime import timedelta
 import bleach  # type: ignore
 import os
@@ -26,6 +26,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 scopes = [  # The amount of access to the account that Spotify allows us
     "playlist-modify-public",
     "playlist-modify-private",
+    "user-library-read",
 ]
 
 
@@ -34,7 +35,9 @@ def index():
     return render_template("index.html")
 
 
-def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_flags):
+def get_songs_from_database(
+    run_length_in_minutes, genres, slider_values, bool_flags, liked_songs=None
+):
     # Variables
     run_length_ms = run_length_in_minutes * 60000
     # Construct query
@@ -52,27 +55,20 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
         .in_("track_genre", genres)
     )
 
-    # # Add conditions based on boolean flags
-    # if not bool_flags["allowExplicit"]:
-    #     query = query.eq("explicit", False)
+    # Add conditions based on boolean flags
+    if not bool_flags["allowExplicit"]:
+        query = query.eq("explicit", False)
 
-    # if bool_flags["instrumentalOnly"]:  # Adjust thresholds as appropriate
-    #     query = query.gte("instrumentalness", 0.5)
+    if bool_flags["instrumentalOnly"]:  # Adjust thresholds as appropriate
+        query = query.gte("instrumentalness", 0.5)
 
-    # if bool_flags["includeAcoustic"]:
-    #     query = query.gte("acousticness", 0.5)
+    if not bool_flags["includeAcoustic"]:
+        query = query.lte("acousticness", 0.5)
 
-    # if bool_flags["includeLive"]:
-    #     query = query.gte("liveness", 0.5)
-    # print("Query is",query)
-    # Execute query
+    if not bool_flags["includeLive"]:
+        query = query.lte("liveness", 0.5)
+
     response = query.execute()
-
-    data = response.data
-
-    # Process data
-    data = response.data
-    print("Slider value:", slider_values)
 
     def sorting_formula(element):
         pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
@@ -81,7 +77,14 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
         priority = pop_diff + tempo_diff + energy_diff
         return priority
 
-    data = sorted(data, key=sorting_formula)
+    data = response.data
+
+    if liked_songs:
+        other_songs = [song for song in data if song["track_id"] not in liked_songs]
+        other_songs = sorted(other_songs, key=sorting_formula)
+        prioritized_songs = [song for song in data if song["track_id"] in liked_songs]
+        prioritized_songs = sorted(prioritized_songs, key=sorting_formula)
+        data = prioritized_songs + other_songs
 
     selected = []
     total_duration = 0
@@ -109,10 +112,60 @@ def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_f
     return selected, total_duration, graph_data
 
 
+@app.route("/fetch_liked_songs")
+def fetch_liked_songs():
+    sp = get_spotify_session()
+    if sp is None:
+        print("Spotify session could not be created.")
+        return None
+    liked_songs = []
+
+    try:
+        results = sp.current_user_saved_tracks(
+            limit=50
+        )  # Fetch up to 50 items per call
+        while results:
+            liked_songs.extend([item["track"]["id"] for item in results["items"]])
+            results = sp.next(results) if results["next"] else None
+    except Exception as e:
+        print(f"Error fetching user's liked songs: {e}")
+
+    requested_data = get_songs_from_database(
+        session["run_length"],
+        session["genres"],
+        session["slider_values"],
+        session["bool_flags"],
+        liked_songs,
+    )
+
+    song_data = requested_data[0]
+    session["graph_data"] = requested_data[2]
+    session["track_ids"] = [i["track_id"] for i in song_data]
+    session["titles"] = [i["track_name"] for i in song_data]
+    session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
+    session["lengths"] = [
+        seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
+    ]
+    return redirect(url_for("export", _external=True))
+
+
+def get_spotify_session():
+    token_info = session.get("token info")
+    if not token_info or "access_token" not in token_info:
+        # Log for debugging
+        print("No token info available in session.")
+        return None
+    return Spotify(auth=token_info["access_token"])
+
+
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
+
+    if not genres[0]:  # No genre selected
+        flash("Please select at least one genre")
+        return redirect(url_for("index", _external=True))
 
     # Dictionary for slider values and thresholds
     slider_values = {
@@ -124,36 +177,42 @@ def fetch_songs():
 
     # Dictionary for boolean flags
     bool_flags = {
-        "allowExplicit": request.form.get("allowExplicit") == "true",
-        "instrumentalOnly": request.form.get("instrumentalOnly") == "true",
-        "includeAcoustic": request.form.get("includeAcoustic") == "true",
-        "includeLive": request.form.get("includeLive") == "true",
+        "allowExplicit": request.form.get("allowExplicit") == "on",
+        "instrumentalOnly": request.form.get("instrumentalOnly") == "on",
+        "includeAcoustic": request.form.get("includeAcoustic") == "on",
+        "includeLive": request.form.get("includeLive") == "on",
+        "includeLikedSongs": request.form.get("includeLikedSongs") == "on",
     }
 
-    requested_data = get_songs_from_database(
-        run_length, genres, slider_values, bool_flags
-    )
+    session["includeLikedSongs"] = bool_flags["includeLikedSongs"]
+    session["slider_values"] = slider_values
+    session["run_length"] = run_length
+    session["bool_flags"] = bool_flags
+    session["genres"] = genres
 
-    song_data = requested_data[0]
-    session["graph_data"] = requested_data[2]
+    if session["includeLikedSongs"]:
+        sp_oauth = get_spotify_oauth()
+        authorise_url = sp_oauth.get_authorize_url()
+        return redirect(authorise_url)
 
-    session["track_ids"] = [i["track_id"] for i in song_data]
-    session["titles"] = [i["track_name"] for i in song_data]
-    session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
-    session["lengths"] = [
-        seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
-    ]
-
-    if not genres[0]:  # No genre selected
-        flash("Please select at least one genre")
-        return redirect(url_for("index", _external=True))
     else:
+        requested_data = get_songs_from_database(
+            run_length, genres, slider_values, bool_flags
+        )
+        song_data = requested_data[0]
+        session["graph_data"] = requested_data[2]
+
+        session["track_ids"] = [i["track_id"] for i in song_data]
+        session["titles"] = [i["track_name"] for i in song_data]
+        session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
+        session["lengths"] = [
+            seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
+        ]
         return redirect(url_for("export", _external=True))
 
 
 @app.route("/export")
 def export():
-    print("here")
     return render_template("export.html", graph_data=session["graph_data"])
 
 
@@ -167,11 +226,6 @@ def generate():
     session["new_playlist_headers"]["description"] = description
     session.permanent = True
     sp_oauth = get_spotify_oauth()
-    # The authorise_url is where Spotify redirects you once
-    # it's finished logging you in. This should be set in our app
-    # on the Spotify developers site as both
-    # https://localhost:5000/redirect (for testing) and
-    # https://sse-cw-group-project.vercel.app/redirect (for deployment)
     authorise_url = sp_oauth.get_authorize_url()
     return redirect(authorise_url)
 
@@ -187,8 +241,12 @@ def _redirect():
         pass
     code = request.args.get("code", None)  # returns None if request fails
     token_info = sp_oauth.get_access_token(code)
-    session["token info"] = token_info  # needed for refreshing token
-    return redirect(url_for("create_playlist", _external=True))
+    session["token info"] = token_info
+    if session["includeLikedSongs"]:
+        session["includeLikedSongs"] = None
+        return redirect(url_for("fetch_liked_songs", _external=True))
+    else:
+        return redirect(url_for("create_playlist", _external=True))
 
 
 @app.route("/create_playlist")  # probably doesn't need its own url

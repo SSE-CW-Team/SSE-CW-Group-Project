@@ -52,6 +52,7 @@ def test_positive_mins_returns_data():
         "allowExplicit": False,
         "instrumentalOnly": False,
         "includeAcoustic": False,
+        "includeLikedSongs": False,
         "includeLive": False,
     }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
@@ -65,6 +66,7 @@ def test_playlist_length_exceeds_run_length():
         "allowExplicit": False,
         "instrumentalOnly": False,
         "includeAcoustic": False,
+        "includeLikedSongs": False,
         "includeLive": False,
     }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

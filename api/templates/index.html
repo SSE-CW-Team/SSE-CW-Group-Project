@@ -193,20 +193,6 @@
           <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
         </div>
         <div class="form-group">
-          <label for="liked_songs">Percentage of liked songs:</label>
-          <input
-            type="range"
-            id="liked_songs"
-            name="liked_songs"
-            min="0"
-            max="100"
-            value="0"
-            step="20"
-            oninput="updateLikedSongsValue()"
-          />
-          <span id="liked_songs_value">0</span><span>%</span>
-        </div>
-        <div class="form-group">
           <label for="tempo">Tempo:</label>
           <input
             type="range"
@@ -242,6 +228,9 @@
             <label> <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic </label>
 
             <label> <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions </label>
+            <label>
+              <input type="checkbox" name="includeLikedSongs" id="includeLikedSongs"> Include liked songs
+          </label>
           </div>
           <div class="form-group">
             <label for="popularity">Popularity:</label>

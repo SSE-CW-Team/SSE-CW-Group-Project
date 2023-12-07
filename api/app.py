@@ -58,7 +58,7 @@ def get_songs_from_database(
     if not bool_flags["allowExplicit"]:
         query = query.eq("explicit", False)
 
-    if bool_flags["instrumentalOnly"]:  # Adjust thresholds as appropriate
+    if bool_flags["instrumentalOnly"]:  # Adjust thresholds
         query = query.gte("instrumentalness", 0.5)
 
     if not bool_flags["includeAcoustic"]:

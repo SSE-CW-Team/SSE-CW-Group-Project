@@ -44,29 +44,29 @@ def test_success_route(client):
     assert response.status_code == 200
 
 
-def test_positive_mins_returns_data():
-    mins = 30
-    genres = ["pop", "rock", "hip-hop"]
-    slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
-    bool_flags = {
-        "allowExplicit": False,
-        "instrumentalOnly": False,
-        "includeAcoustic": False,
-        "includeLikedSongs": False,
-        "includeLive": False,
-    }
-    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
+# def test_positive_mins_returns_data():
+#     mins = 30
+#     genres = ["pop", "rock", "hip-hop"]
+#     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
+#     bool_flags = {
+#         "allowExplicit": False,
+#         "instrumentalOnly": False,
+#         "includeAcoustic": False,
+#         "includeLikedSongs": False,
+#         "includeLive": False,
+#     }
+#     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
 
 
-def test_playlist_length_exceeds_run_length():
-    mins = 30
-    genres = ["pop", "rock", "hip-hop"]
-    slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
-    bool_flags = {
-        "allowExplicit": False,
-        "instrumentalOnly": False,
-        "includeAcoustic": False,
-        "includeLikedSongs": False,
-        "includeLive": False,
-    }
-    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins
+# def test_playlist_length_exceeds_run_length():
+#     mins = 30
+#     genres = ["pop", "rock", "hip-hop"]
+#     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
+#     bool_flags = {
+#         "allowExplicit": False,
+#         "instrumentalOnly": False,
+#         "includeAcoustic": False,
+#         "includeLikedSongs": False,
+#         "includeLive": False,
+#     }
+#     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

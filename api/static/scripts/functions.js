@@ -21,6 +21,27 @@ function filterOptions() {
     option.remove();
   });
 }
+
+function checkStatus() {
+  fetch('/check_task_status')
+      .then(response => response.json())
+      .then(data => {
+          console.log(data.status);
+          if (data.status === 'complete') {
+              window.location.href = '/export'
+          } else {
+              setTimeout(checkStatus, 2000); // Check again after 2 seconds
+          }
+      });
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('generatePlaylistButton').addEventListener('click', function(event) {
+      checkStatus();
+  });
+});
+
+
 function updateLikedSongsValue() {
   var slider = document.getElementById("liked_songs");
   var valueDisplay = document.getElementById("liked_songs_value");
@@ -346,4 +367,6 @@ function updateSliderColors(workoutType) {
   sliders.forEach((slider) => {
     slider.style.background = backgroundColor;
   });
+
 }
+

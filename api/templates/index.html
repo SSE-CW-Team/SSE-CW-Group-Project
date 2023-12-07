@@ -246,7 +246,8 @@
           </div>
         </div>
         <input type="hidden" id="selectedGenres" name="selectedGenres" value="" />
-        <button type="submit" class="main-button">Generate Playlist</button>
+        <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
+        <button type="submit" id="generatePlaylistButton" class="main-button">Generate Playlist</button>
       </form>
     </div>
   </body>

@@ -1,4 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import (
+    Flask,
+    jsonify,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    copy_current_request_context,
+    session,
+    flash,
+)
+import threading
 from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client  # type: ignore
@@ -111,45 +122,9 @@ def get_songs_from_database(
     return selected, total_duration, graph_data
 
 
-@app.route("/fetch_liked_songs")
-def fetch_liked_songs():
-    sp = get_spotify_session()
-    if sp is None:
-        print("Spotify session could not be created.")
-        return None
-    liked_songs = []
-
-    try:
-        results = sp.current_user_saved_tracks(
-            limit=50
-        )  # Fetch up to 50 items per call
-        while results:
-            liked_songs.extend([item["track"]["id"] for item in results["items"]])
-            results = sp.next(results) if results["next"] else None
-    except Exception as e:
-        print(f"Error fetching user's liked songs: {e}")
-
-    requested_data = get_songs_from_database(
-        session["run_length"],
-        session["genres"],
-        session["slider_values"],
-        session["bool_flags"],
-        liked_songs,
-    )
-
-    song_data = requested_data[0]
-    session["graph_data"] = requested_data[2]
-    session["track_ids"] = [i["track_id"] for i in song_data]
-    session["titles"] = [i["track_name"] for i in song_data]
-    session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
-    session["lengths"] = [
-        seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
-    ]
-    return redirect(url_for("export", _external=True))
-
-
 def get_spotify_session():
-    token_info = session.get("token info")
+    with app.app_context():
+        token_info = session.get("token info")
     if not token_info or "access_token" not in token_info:
         # Log for debugging
         print("No token info available in session.")
@@ -159,6 +134,7 @@ def get_spotify_session():
 
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
+    print(127)
     run_length = float(request.form.get("run_length"))
     genres = string_to_list(request.form.get("selectedGenres"))
 
@@ -233,6 +209,7 @@ def generate():
 # This is just where the token info is collected
 @app.route("/redirect")
 def _redirect():
+    print(201)
     sp_oauth = get_spotify_oauth()
     try:
         session.pop("token info")
@@ -242,6 +219,7 @@ def _redirect():
     token_info = sp_oauth.get_access_token(code)
     session["token info"] = token_info
     if session["includeLikedSongs"]:
+        print(211)
         session["includeLikedSongs"] = None
         return redirect(url_for("fetch_liked_songs", _external=True))
     else:
@@ -308,5 +286,79 @@ def seconds_to_mm_ss(seconds):
     return result
 
 
+@app.route("/fetch_liked_songs")
+def fetch_liked_songs():
+    print("278")
+
+    @copy_current_request_context
+    def fetch_spotify_data():
+        sp = get_spotify_session()
+        print("281")
+        with app.app_context():
+            if sp is None:
+                print("Spotify session could not be created.")
+                return
+            liked_songs = []
+
+            try:
+                results = sp.current_user_saved_tracks(limit=50)
+                while results:
+                    liked_songs.extend(
+                        [item["track"]["id"] for item in results["items"]]
+                    )
+                    results = sp.next(results) if results["next"] else None
+            except Exception as e:
+                print(f"Error fetching user's liked songs: {e}")
+                return
+            print("Line 296 reached")
+            requested_data = get_songs_from_database(
+                session["run_length"],
+                session["genres"],
+                session["slider_values"],
+                session["bool_flags"],
+                liked_songs,
+            )
+
+            song_data = requested_data[0]
+            session["graph_data"] = requested_data[2]
+            session["track_ids"] = [i["track_id"] for i in song_data]
+            session["titles"] = [i["track_name"] for i in song_data]
+            session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
+            session["lengths"] = [
+                seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
+            ]
+
+            session["task_complete"] = True
+            print("task complete")
+            with open("task_status.txt", "w") as file:
+                file.write("complete")
+            # Here you would handle the post-processing such as saving to a database or updating the session.
+
+    thread = threading.Thread(target=fetch_spotify_data)
+    thread.start()
+    with open("task_status.txt", "w") as file:
+        file.write("incomplete")
+    return redirect(url_for("loading"))
+
+
+@app.route("/loading")
+def loading():
+    return render_template("refresh.html")
+
+
+@app.route("/check_task_status")
+def check_task_status():
+    try:
+        with open("task_status.txt", "r") as file:
+            status = file.read().strip()
+        if status == "complete":
+            return jsonify({"status": "complete"})
+        else:
+            return jsonify({"status": "processing"})
+    except FileNotFoundError:
+        # Handle the case where the file doesn't exist
+        return jsonify({"status": "processing"})
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

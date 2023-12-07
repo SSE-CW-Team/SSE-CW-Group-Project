@@ -219,22 +219,25 @@
         </div>
         <div id="advanced-search-container" class="advanced-search-container">
           <div class="checkbox-container">
-            <label> <input type="checkbox" name="allowExplicit" id="allowExplicit" /> Include explicit songs </label>
-
-            <label>
-              <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly" /> Include instrumentals
+            <label> 
+              <input type="checkbox" name="allowExplicit" id="allowExplicit" /> Include explicit songs
             </label>
-
-            <label> <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic </label>
-
-            <label> <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions </label>
+            <label>
+              <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly" /> Instrumentals only
+            </label>
+            <label>
+              <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic
+            </label>
+            <label>
+              <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions
+            </label>
             <label>
               <input type="checkbox" name="includeLikedSongs" id="includeLikedSongs"> Include liked songs
           </label>
           </div>
           <div class="form-group">
             <label for="popularity">Popularity:</label>
-            <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="0" />
+            <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="50" />
           </div>
           <div class="form-group">
             <label for="danceability">Danceability:</label>

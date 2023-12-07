@@ -345,10 +345,10 @@ function updateSliderColors(workoutType) {
 
   switch (workoutType) {
     case "running":
-      backgroundColor = "linear-gradient(to right, #00b300, #39ff14)";
+      backgroundColor = "linear-gradient(to right, #004d00, #00cc00)";
       break;
     case "boxing":
-      backgroundColor = "linear-gradient(to right, #4b0082, #8a2be2)";
+      backgroundColor = "linear-gradient(to right, #8b008b, #e600e6)";
       break;
     case "cycling":
       backgroundColor = "linear-gradient(to right, #001f3f, #00BFFF)";
@@ -357,11 +357,11 @@ function updateSliderColors(workoutType) {
       backgroundColor = "linear-gradient(to right, #b3b300, #ffff00)";
       break;
     case "gym":
-      backgroundColor = "linear-gradient(to right, #cc0000, #ff3e3e)";
+      backgroundColor = "linear-gradient(to right, #cc0000, #ff6600)";
       break;
 
     default:
-      backgroundColor = "linear-gradient(to right,  #d9d9d9, #ffffff)";
+      backgroundColor = "linear-gradient(to right,  #636262, #ffffff)";
   }
 
   sliders.forEach((slider) => {

@@ -88,14 +88,20 @@ def get_songs_from_database(
     selected = []
     total_duration = 0
 
-    for song in data:
-        if total_duration + song["duration_ms"] <= run_length_ms:
-            selected.append(song)
-            total_duration += song["duration_ms"]
-        else:
-            selected.append(song)
-            total_duration += song["duration_ms"]
-            break
+    for i in range(len(data)):
+        song = data[i]
+        try:
+            if i != 0 and song['track_name'] == data[i-1]['track_name']:
+                pass # continue
+            if total_duration + song["duration_ms"] <= run_length_ms:
+                selected.append(song)
+                total_duration += song["duration_ms"]
+            else:
+                selected.append(song)
+                total_duration += song["duration_ms"]
+                break
+        except KeyError:
+            print(song)
 
     # Generate data for graph:
     graph_data = []

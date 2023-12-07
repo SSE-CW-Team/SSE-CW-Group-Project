@@ -90,18 +90,15 @@ def get_songs_from_database(
 
     for i in range(len(data)):
         song = data[i]
-        try:
-            if i != 0 and song['track_name'] == data[i-1]['track_name']:
-                pass # continue
-            if total_duration + song["duration_ms"] <= run_length_ms:
-                selected.append(song)
-                total_duration += song["duration_ms"]
-            else:
-                selected.append(song)
-                total_duration += song["duration_ms"]
-                break
-        except KeyError:
-            print(song)
+        if i != 0 and song['track_name'] == data[i-1]['track_name']:
+            continue
+        if total_duration + song["duration_ms"] <= run_length_ms:
+            selected.append(song)
+            total_duration += song["duration_ms"]
+        else:
+            selected.append(song)
+            total_duration += song["duration_ms"]
+            break
 
     # Generate data for graph:
     graph_data = []
@@ -290,10 +287,9 @@ def get_spotify_oauth():
     )
 
 
-# Page that links you to Spotify. Maybe it could contain a link
-# to your playlist instead?
 @app.route("/success", methods=["GET"])
 def success():
+    session.pop("token info")
     return render_template("success.html")
 
 

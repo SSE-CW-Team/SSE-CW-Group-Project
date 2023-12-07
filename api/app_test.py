@@ -1,5 +1,4 @@
 from app import app
-from app import get_songs_from_database
 import pytest
 
 sample_data = {

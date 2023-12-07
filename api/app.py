@@ -55,7 +55,6 @@ def get_songs_from_database(
         .in_("track_genre", genres)
     )
 
-    # Add conditions based on boolean flags
     if not bool_flags["allowExplicit"]:
         query = query.eq("explicit", False)
 

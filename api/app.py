@@ -118,7 +118,7 @@ def get_songs_from_database(
         graph_data.append(
             {"name": song["track_name"], "time": current_time, "distance": 10}
         )
-
+    session['graph_data'] = graph_data
     return selected, total_duration, graph_data
 
 
@@ -188,6 +188,7 @@ def fetch_songs():
 
 @app.route("/export")
 def export():
+    print(session["graph_data"])
     return render_template("export.html", graph_data=session["graph_data"])
 
 

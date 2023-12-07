@@ -34,9 +34,7 @@ def index():
     return render_template("index.html")
 
 
-def get_songs_from_database(
-    run_length_in_minutes, genres, slider_values, bool_flags, distance
-):
+def get_songs_from_database(run_length_in_minutes, genres, slider_values, bool_flags):
     # Variables
     run_length_ms = run_length_in_minutes * 60000
     # Construct query
@@ -100,14 +98,12 @@ def get_songs_from_database(
     # Generate data for graph:
     graph_data = []
     current_time = 0
-    dist = 0
 
     for song in selected:
         song_length = int(song["duration_ms"]) / 1000
         current_time += song_length
-        dist += distance * (song_length / (total_duration / 1000))
         graph_data.append(
-            {"name": song["track_name"], "time": current_time, "distance": dist}
+            {"name": song["track_name"], "time": current_time, "distance": 10}
         )
 
     return selected, total_duration, graph_data
@@ -116,7 +112,6 @@ def get_songs_from_database(
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
     run_length = float(request.form.get("run_length"))
-    distance = float(request.form.get("distance"))
     genres = string_to_list(request.form.get("selectedGenres"))
 
     # Dictionary for slider values and thresholds
@@ -136,7 +131,7 @@ def fetch_songs():
     }
 
     requested_data = get_songs_from_database(
-        run_length, genres, slider_values, bool_flags, distance
+        run_length, genres, slider_values, bool_flags
     )
 
     song_data = requested_data[0]

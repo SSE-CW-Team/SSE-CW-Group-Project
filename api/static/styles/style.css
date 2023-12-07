@@ -1,6 +1,19 @@
+.title {
+  display: flex;
+}
+
 .content {
   display: flex;
 }
+
+#title-text-div{
+  flex: 1;
+}
+
+#title-logo-div {
+  flex: 1;
+}
+
 
 #left {
   flex: 1;
@@ -8,6 +21,18 @@
 
 #right {
   flex: 1;
+}
+
+.title {
+  text-align: left;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto; /* This will center the logo horizontally */
+  width: 80%; /* Adjust the width as needed */
+  height: auto;
+  margin-right: 10px; /* Add some margin between the logo and text */
 }
 
 
@@ -41,7 +66,6 @@
   
 body {
     font-family: 'Arial', sans-serif;
-    background-image: url("../images/background_neon_sprinter.png");
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -54,6 +78,30 @@ body {
     height: 100vh;
     color: #ffffff;
     font-family: 'Raleway', sans-serif;
+}
+
+body.general {
+  background-image: url("../images/background_neon_default.png");
+}
+
+body.running {
+  background-image: url("../images/background_neon_sprinter.png");
+}
+
+body.boxing {
+  background-image: url("../images/background_neon_boxer.png");
+}
+
+body.cycling {
+  background-image: url("../images/background_neon_cyclist.png");
+}
+
+body.yoga {
+  background-image: url("../images/background_neon_meditation.png");
+}
+
+body.gym {
+  background-image: url("../images/background_neon_weightlifter.png");
 }
 
 body::before {
@@ -159,15 +207,6 @@ width: 8px; /* WebKit */
 background-color: #3498db; /* WebKit thumb color */
 }
 
-
-h1 {
-    color: #39ff14; /* Neon green for headers */
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
 h3 {
     text-align: center;
 }
@@ -215,7 +254,7 @@ input[type="range"] {
     width: 100%;
     height: 10px;
     border-radius: 5px;
-    background: linear-gradient(to right, #001f3f, #00BFFF); /* Dark blue to light blue */
+    background: linear-gradient(to right, #d9d9d9, #ffffff); /* Dark blue to light blue */
     outline: none;
 }
 
@@ -291,11 +330,14 @@ label {
   }
   
 
-.explanation {
+#explanation {
     font-size: 0.9rem;
     color: #6c757d; /* Grey color for explanation text */
     margin-bottom: 20px;
-    text-align: center;
+}
+
+.title-text {
+  text-align: left;
 }
 
 .remove {
@@ -360,4 +402,19 @@ table {
   
   #home-page-container {
     width: 33%;
+  }
+
+  #workout-options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  #workout-options {
+    margin-right: 20px; /* Adjust the margin as needed to create space between options */
+  }
+
+  .workout-option input {
+    margin-right: 5px; /* Add some space between the radio button and the label */
   }

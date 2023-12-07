@@ -1,7 +1,5 @@
 // script.js
 
-
-
 // Function to filter options based on user input
 function filterOptions() {
   updateLikedSongsValue();
@@ -11,16 +9,16 @@ function filterOptions() {
   for (var i = 0; i < options.length; i++) {
     var optionValue = options[i].value.toLowerCase();
     if (optionValue.startsWith(input)) {
-        options[i].setAttribute("data-match", "true");
+      options[i].setAttribute("data-match", "true");
     } else {
-        options[i].removeAttribute("data-match");
+      options[i].removeAttribute("data-match");
     }
   }
 
   // Remove non-matching options from the list
   var nonMatchingOptions = datalist.querySelectorAll("option:not([data-match])");
   nonMatchingOptions.forEach(function (option) {
-      option.remove();
+    option.remove();
   });
 }
 function updateLikedSongsValue() {
@@ -32,7 +30,7 @@ function updateLikedSongsValue() {
 // Function to add selected option to the list
 function addToSelectedList() {
   var genres_text = document.getElementById("selectedGenresText");
-  genres_text.innerHTML = "Selected genres:"
+  genres_text.innerHTML = "Selected genres:";
   var inputElement = document.getElementById("genre");
 
   // Check if the input box is empty
@@ -43,9 +41,7 @@ function addToSelectedList() {
   var dropdownOptions = document.getElementById("genreList").getElementsByTagName("option");
 
   // Filter dropdown options based on user input
-  var filteredOptions = Array.from(dropdownOptions).filter(
-    (option) => option.value.toLowerCase() === selectedItem
-  );
+  var filteredOptions = Array.from(dropdownOptions).filter((option) => option.value.toLowerCase() === selectedItem);
 
   if (filteredOptions.length === 0) {
     return; // Exit early if there are no filtered options
@@ -73,7 +69,7 @@ document.getElementById("genre").addEventListener("keydown", function (event) {
     event.preventDefault();
     addToSelectedList(); // Simulate a click on the most relevant value
   }
-  console.log(selectedList)
+  console.log(selectedList);
 });
 
 // Function to add the selected option to the list
@@ -138,7 +134,6 @@ function printSelectedListState() {
   console.log("Selected List State:", selectedGenres);
 }
 
-
 // Function to remove the selected option from the dropdown list
 function removeOptionFromDropdown(optionText) {
   var dropdownOptions = document.getElementById("genreList").getElementsByTagName("option");
@@ -192,4 +187,163 @@ function getSelectedGenres() {
   }
 
   return selectedGenres;
+}
+
+// Existing JavaScript functions remain unchanged
+
+// Function to update default values based on selected workout
+function updateDefaultValues(workout) {
+  var tempo = 0;
+  var runLength = 0;
+  var danceability = 0.5;
+  var energy = 0.5;
+  var defaultGenres = [];
+
+  // Set default values based on the selected workout
+  switch (workout) {
+    case "running":
+      tempo = 90;
+      danceability = 0.7;
+      energy = 0.6;
+      defaultGenres = ["Pop", "Rock", "Electronic"];
+      break;
+    case "boxing":
+      tempo = 130;
+      danceability = 0.5;
+      energy = 0.9;
+      defaultGenres = ["Hip-Hop", "Rock", "Electronic"];
+      break;
+    case "cycling":
+      tempo = 140;
+      danceability = 0.3;
+      energy = 0.7;
+      defaultGenres = ["EDM", "Rock", "Pop"];
+      break;
+    case "yoga":
+      tempo = 60;
+      danceability = 0.1;
+      energy = 0.2;
+      defaultGenres = ["Ambient", "Classical", "Instrumental"];
+      break;
+    case "gym":
+      tempo = 100;
+      danceability = 0.5;
+      energy = 0.6;
+      defaultGenres = ["Metal", "Rock", "Electronic"];
+      break;
+    case "general":
+      tempo = 100;
+      danceability = 0.5;
+      energy = 0.5;
+      break;
+  }
+
+  // Update default values in the form
+  document.getElementById("tempo").value = tempo;
+  document.getElementById("danceability").value = danceability;
+  document.getElementById("energy").value = energy;
+
+  updateTempoValue();
+  handleWorkoutSelection(workout);
+
+  // Update genres in the selected list
+  updateGenresList(defaultGenres);
+}
+
+// Function to update the genres list based on selected default genres
+function updateGenresList(defaultGenres) {
+  // Clear existing selected genres
+  clearSelectedGenres();
+
+  // Add default genres to the selected list
+  defaultGenres.forEach(function (genre) {
+    addOptionToSelectedList(genre);
+  });
+
+  // Update the hidden input with selected genres
+  updateHiddenInput();
+}
+
+// Function to clear the selected genres list
+function clearSelectedGenres() {
+  var selectedList = document.getElementById("selectedList");
+  selectedList.innerHTML = "";
+}
+
+// Function to get a random integer within a range
+
+// Event listener for changes in the workout selection
+document.getElementsByName("workout").forEach(function (radio) {
+  radio.addEventListener("change", function () {
+    updateDefaultValues(this.value);
+  });
+});
+
+// Assuming you have a function to handle workout selection
+function handleWorkoutSelection(workoutType) {
+  // Remove existing workout class from body
+  document.body.classList.remove("running", "boxing", "cycling", "yoga", "gym", "general");
+
+  // Add the selected workout class to body
+  document.body.classList.add(workoutType);
+  updateh1s(workoutType);
+  updateSliderColors(workoutType);
+}
+
+function updateh1s(workoutType) {
+  const h1Element = document.querySelector("h1");
+  let color;
+
+  switch (workoutType) {
+    case "running":
+      color = "#39ff14";
+      break;
+    case "boxing":
+      color = "#8a2be2";
+      break;
+    case "cycling":
+      color = "#00bfff";
+      break;
+    case "yoga":
+      color = "#ffff00";
+      break;
+    case "gym":
+      color = "#ff3e3e";
+      break;
+
+    default:
+      color = "#ffffff";
+  }
+
+  h1Element.style.color = color;
+}
+
+function updateSliderColors(workoutType) {
+  const sliders = document.querySelectorAll('input[type="range"]');
+  let backgroundColor;
+
+  switch (workoutType) {
+    case "running":
+      backgroundColor = "linear-gradient(to right, #00b300, #39ff14)";
+      break;
+    case "boxing":
+      backgroundColor = "linear-gradient(to right, #4b0082, #8a2be2)";
+      break;
+    case "cycling":
+      backgroundColor = "linear-gradient(to right, #001f3f, #00BFFF)";
+      break;
+    case "yoga":
+      backgroundColor = "linear-gradient(to right, #b3b300, #ffff00)";
+      break;
+    case "gym":
+      backgroundColor = "linear-gradient(to right, #cc0000, #ff3e3e)";
+      break;
+
+    default:
+      backgroundColor = "linear-gradient(to right,  #d9d9d9, #ffffff)";
+  }
+
+  sliders.forEach((slider) => {
+    slider.style.background = backgroundColor;
+  });
 }

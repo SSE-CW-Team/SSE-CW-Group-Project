@@ -3,27 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tempo - Your Running Companion</title>
+    <title>Tempo - Your Workout Companion</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
     <script src="{{ url_for('static', filename='scripts/metronome.js')}}"></script>
     <audio id="tickSound" data-url="{{ url_for('static', filename='sounds/tick.mp3') }}"></audio>
   </head>
-  <body>
-    <div class="container" id = "home-page-container">
-      <h1>Tempo: Running Playlist Generator</h1>
-      <p class="explanation">Fill in the details below to generate a personalized running playlist.</p>
-      <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
-        <div class="form-group">
-          <label for="distance">Approximate distance (km)</label>
-          <input type="number" id="distance" name="distance" min="0" max="100" required />
+  <body class="general">
+    <div class="container" id="home-page-container">
+      <div class="title">
+        <div id="title-logo-div">
+          <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Your Logo" class="logo" />
         </div>
+        <div id="title-text-div">
+          <h1 class="title-text" class="general">Tempo: Workout Playlist Generator</h1>
+          <p class="" id="explanation">Fill in the details below to generate a personalized workout playlist.</p>
+        </div>
+      </div>
+
+      <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
+        <label>Workout Type:</label>
+        <div id="workout-options" class="form-group">
+          <div class="workout-option">
+            <label for="general">General</label>
+            <input type="radio" id="general" name="workout" value="general" checked />
+          </div>
+          <div class="workout-option">
+            <label for="running">Running</label>
+            <input type="radio" id="running" name="workout" value="running" />
+          </div>
+          <div class="workout-option">
+            <label for="boxing">Boxing</label>
+            <input type="radio" id="boxing" name="workout" value="boxing" />
+          </div>
+          <div class="workout-option">
+            <label for="cycling">Cycling</label>
+            <input type="radio" id="cycling" name="workout" value="cycling" />
+          </div>
+          <div class="workout-option">
+            <label for="yoga">Yoga</label>
+            <input type="radio" id="yoga" name="workout" value="yoga" />
+          </div>
+          <div class="workout-option">
+            <label for="gym">Gym</label>
+            <input type="radio" id="gym" name="workout" value="gym" />
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="run_length">Approximate running time (mins)</label>
+          <label for="run_length">Approximate workout time (mins)</label>
           <input type="number" id="run_length" name="run_length" min="0" max="200" required />
         </div>
         <div class="form-group">
           <label for="genre">Music Genres to be included:</label>
-          <input type="text" id="genre" name="genre" list="genreList" oninput="filterOptions()" placeholder="Type in a genre..." />
+          <input
+            type="text"
+            id="genre"
+            name="genre"
+            list="genreList"
+            oninput="filterOptions()"
+            placeholder="Type in a genre..."
+          />
           <datalist id="genreList">
             <option value="Acoustic"></option>
             <option value="Afrobeat"></option>
@@ -147,70 +186,74 @@
             <label for="selectedList" id="selectedGenresText">Selected genres will appear here:</label>
             <ul id="selectedList"></ul>
           </div>
-          {% with messages = get_flashed_messages() %}
-            {% if messages %}
-              <div class="alert alert-message">
-                  {{ messages[0] }}
-              </div>
-            {% endif %}
-          {% endwith %}
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <div class="alert alert-message">{{ messages[0] }}</div>
+          {% endif %} {% endwith %}
           <!-- Link to external JavaScript file -->
           <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
         </div>
         <div class="form-group">
           <label for="liked_songs">Percentage of liked songs:</label>
-          <input type="range" id="liked_songs" name="liked_songs" min="0" max="100" value="0" step="20" oninput="updateLikedSongsValue()">
+          <input
+            type="range"
+            id="liked_songs"
+            name="liked_songs"
+            min="0"
+            max="100"
+            value="0"
+            step="20"
+            oninput="updateLikedSongsValue()"
+          />
           <span id="liked_songs_value">0</span><span>%</span>
         </div>
         <div class="form-group">
           <label for="tempo">Tempo:</label>
-          <input type="range" id="tempo" name="tempoValue" min="60" max="200" value="100" oninput="updateTempoValue()">
+          <input
+            type="range"
+            id="tempo"
+            name="tempoValue"
+            min="60"
+            max="200"
+            value="100"
+            oninput="updateTempoValue()"
+          />
           <span id="tempo_value">100</span><span>bpm</span>
           <button type="button" id="metronome-button" class="metro-btn" onclick="toggleMetronome()">⏵</button>
         </div>
         <div class="advanced-form-group">
           <label>
             Advanced Search
-            <input type="checkbox" name="advanced_search" id="advanced-search-checkbox" onchange="toggleAdvancedOptions()">
+            <input
+              type="checkbox"
+              name="advanced_search"
+              id="advanced-search-checkbox"
+              onchange="toggleAdvancedOptions()"
+            />
           </label>
         </div>
         <div id="advanced-search-container" class="advanced-search-container">
           <div class="checkbox-container">
+            <label> <input type="checkbox" name="allowExplicit" id="allowExplicit" /> Include explicit songs </label>
+
             <label>
-                <input type="checkbox" name="allowExplicit" id="allowExplicit"> Include explicit songs
+              <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly" /> Include instrumentals
             </label>
-        
-            <label>
-                <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly"> Include instrumentals
-            </label>
-        
-            <label>
-                <input type="checkbox" name="includeAcoustic" id="includeAcoustic"> Include acoustic
-            </label>
-        
-            <label>
-                <input type="checkbox" name="includeLive" id="includeLive"> Include live versions
-            </label>
-        </div>
+
+            <label> <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic </label>
+
+            <label> <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions </label>
+          </div>
           <div class="form-group">
             <label for="popularity">Popularity:</label>
-            <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="0">
+            <input type="range" id="popularity" name="popularityValue" min="0" max="100" value="0" />
           </div>
           <div class="form-group">
             <label for="danceability">Danceability:</label>
-            <input type="range" id="danceability" name="danceabilityValue" min="0" max="1" value="0.5" step="0.01">
+            <input type="range" id="danceability" name="danceabilityValue" min="0" max="1" value="0.5" step="0.01" />
           </div>
           <div class="form-group">
             <label for="energy">Energy:</label>
-            <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01">
-          </div>
-          <div class="form-group">
-            <label for="intensity">Running Intensity:</label>
-            <select id="intensity" name="intensity">
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
+            <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01" />
           </div>
         </div>
         <input type="hidden" id="selectedGenres" name="selectedGenres" value="" />
@@ -218,3 +261,4 @@
       </form>
     </div>
   </body>
+</html>

@@ -4,7 +4,6 @@ import pytest
 
 sample_data = {
     "run_length": "3.5",
-    "distance": "10",
     "selectedGenres": "Rock, Pop",
     "intensity": "high",
     "name": "My Playlist",
@@ -47,7 +46,6 @@ def test_success_route(client):
 
 def test_positive_mins_returns_data():
     mins = 30
-    distance = 10
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
     bool_flags = {
@@ -56,15 +54,11 @@ def test_positive_mins_returns_data():
         "includeAcoustic": False,
         "includeLive": False,
     }
-    assert (
-        get_songs_from_database(mins, genres, slider_values, bool_flags, distance)[0]
-        != []
-    )
+    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
 
 
 def test_playlist_length_exceeds_run_length():
     mins = 30
-    distance = 10
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5}
     bool_flags = {
@@ -73,7 +67,4 @@ def test_playlist_length_exceeds_run_length():
         "includeAcoustic": False,
         "includeLive": False,
     }
-    assert (
-        get_songs_from_database(mins, genres, slider_values, bool_flags, distance)[1]
-        > mins
-    )
+    assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

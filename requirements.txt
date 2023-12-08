@@ -13,6 +13,7 @@ deprecation==2.1.0
 distro==1.8.0
 exceptiongroup==1.2.0
 flake8==6.1.0
+Flask-Caching==2.1.0
 Flask==3.0.0
 gotrue==2.0.0
 h11==0.14.0

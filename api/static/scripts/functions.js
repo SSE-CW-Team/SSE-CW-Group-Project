@@ -23,24 +23,23 @@ function filterOptions() {
 }
 
 function checkStatus() {
-  fetch('/check_task_status')
-      .then(response => response.json())
-      .then(data => {
-          console.log(data.status);
-          if (data.status === 'complete') {
-              window.location.href = '/export'
-          } else {
-              setTimeout(checkStatus, 2000); // Check again after 2 seconds
-          }
-      });
+  fetch("/check_task_status")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.status);
+      if (data.status === "complete") {
+        window.location.href = "/export";
+      } else {
+        setTimeout(checkStatus, 2000); // Check again after 2 seconds
+      }
+    });
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-  document.getElementById('generatePlaylistButton').addEventListener('click', function(event) {
-      checkStatus();
+document.addEventListener("DOMContentLoaded", (event) => {
+  document.getElementById("generatePlaylistButton").addEventListener("click", function (event) {
+    checkStatus();
   });
 });
-
 
 function updateLikedSongsValue() {
   var slider = document.getElementById("liked_songs");
@@ -308,63 +307,117 @@ function handleWorkoutSelection(workoutType) {
   // Add the selected workout class to body
   document.body.classList.add(workoutType);
   updateh1s(workoutType);
-  updateSliderColors(workoutType);
+  updateSliderColours(workoutType);
 }
 
 function updateh1s(workoutType) {
-  let color;
+  let colour;
 
   switch (workoutType) {
     case "running":
-      color = "#39ff14";
+      colour = "#39ff14";
       break;
     case "boxing":
-      color = "#8a2be2";
+      colour = "#8a2be2";
       break;
     case "cycling":
-      color = "#00bfff";
+      colour = "#00bfff";
       break;
     case "yoga":
-      color = "#ffff00";
+      colour = "#ffff00";
       break;
     case "gym":
-      color = "#ff3e3e";
+      colour = "#ff3e3e";
       break;
 
     default:
-      color = "#ffffff";
+      colour = "#ffffff";
   }
 }
 
-function updateSliderColors(workoutType) {
-
+function updateSliderColours(workoutType) {
   const sliders = document.querySelectorAll('input[type="range"]');
-  let backgroundColor;
+  const button = document.getElementById("generatePlaylistButton");
+
+  let backgroundColour;
+  let buttonColour;
+  let textColour;
+
+  let hoverBackground;
+  let hoverButtonColor;
 
   switch (workoutType) {
     case "running":
-      backgroundColor = "linear-gradient(to right, #004d00, #00cc00)";
+      backgroundColour = "linear-gradient(to right, #004d00, #00cc00)";
+      buttonColour = "#00cc00";
+      textColour = "#ffffff"; // White text for better visibility
+      hoverBackground = "#009900";
+      hoverButtonColor = "#ffffff";
       break;
     case "boxing":
-      backgroundColor = "linear-gradient(to right, #8b008b, #e600e6)";
+      backgroundColour = "linear-gradient(to right, #8b008b, #e600e6)";
+      buttonColour = "#e600e6";
+      textColour = "#ffffff";
+      hoverBackground = "#990099";
+      hoverButtonColor = "#ffffff";
       break;
     case "cycling":
-      backgroundColor = "linear-gradient(to right, #001f3f, #00BFFF)";
+      backgroundColour = "linear-gradient(to right, #001f3f, #00BFFF)";
+      buttonColour = "#00BFFF";
+      textColour = "#ffffff";
+      hoverBackground = "#007acc";
+      hoverButtonColor = "#ffffff";
       break;
     case "yoga":
-      backgroundColor = "linear-gradient(to right, #b3b300, #ffff00)";
+      backgroundColour = "linear-gradient(to right, #b3b300, #ffff00)";
+      buttonColour = "#b3b300";
+      textColour = "#000000"; // Black text for better visibility
+      hoverBackground = "#e6e600";
+      hoverButtonColor = "#000000";
       break;
     case "gym":
-      backgroundColor = "linear-gradient(to right, #cc0000, #ff6600)";
+      backgroundColour = "linear-gradient(to right, #cc0000, #ff6600)";
+      buttonColour = "#ff6600";
+      textColour = "#ffffff";
+      hoverBackground = "#ff3300";
+      hoverButtonColor = "#ffffff";
       break;
-
     default:
-      backgroundColor = "linear-gradient(to right,  #636262, #ffffff)";
+      backgroundColour = "linear-gradient(to right, #636262, #ffffff)";
+      buttonColour = "#ffffff";
+      textColour = "#000000";
+      hoverBackground = "#474747";
+      hoverButtonColor = "#ffffff";
   }
 
+  // Update background and text color of sliders
   sliders.forEach((slider) => {
-    slider.style.background = backgroundColor;
+    slider.style.background = backgroundColour;
   });
 
+  // Update background and text color of the button
+  button.style.background = buttonColour;
+  button.style.color = textColour;
+
+  // Add hover effect to the button
+  button.addEventListener("mouseover", function () {
+    button.style.background = hoverBackground;
+    button.style.color = hoverButtonColor;
+  });
+
+  button.addEventListener("mouseout", function () {
+    button.style.background = backgroundColour;
+    button.style.color = textColour;
+  });
 }
 
+document.getElementById("inputForm").addEventListener("submit", function (event) {
+  // Hide the submit button and show the loading animation
+  const includeLikedSongsCheckbox = document.getElementById("includeLikedSongs");
+  const includeLikedSongs = includeLikedSongsCheckbox.checked;
+
+  if (includeLikedSongs) {
+    document.getElementById("generatePlaylistButton").style.display = "none";
+    document.getElementById("loading-container").style.display = "block";
+  }
+});

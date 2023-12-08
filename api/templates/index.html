@@ -41,20 +41,20 @@
             <input type="radio" id="running" name="workout" value="running" />
           </div>
           <div class="workout-option">
-            <label for="boxing">Boxing</label>
+            <label for="boxing">Boxercise</label>
             <input type="radio" id="boxing" name="workout" value="boxing" />
           </div>
           <div class="workout-option">
-            <label for="cycling">Cycling</label>
+            <label for="cycling">Spin</label>
             <input type="radio" id="cycling" name="workout" value="cycling" />
-          </div>
-          <div class="workout-option">
-            <label for="yoga">Yoga</label>
-            <input type="radio" id="yoga" name="workout" value="yoga" />
           </div>
           <div class="workout-option">
             <label for="gym">Gym</label>
             <input type="radio" id="gym" name="workout" value="gym" />
+          </div>
+          <div class="workout-option">
+            <label for="yoga">Yoga</label>
+            <input type="radio" id="yoga" name="workout" value="yoga" />
           </div>
         </div>
 
@@ -282,6 +282,18 @@
         <script src="{{ url_for('static', filename='scripts/functions.js')}}"></script>
         <button type="submit" id="generatePlaylistButton" class="main-button">Generate Playlist</button>
       </form>
+
+      <div id="loading-container" style="display: none">
+        <div class="loading-animation">
+          <div id="loading-message">Fetching liked songs...</div>
+          <div class="lds-ellipsis">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

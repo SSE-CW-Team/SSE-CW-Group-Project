@@ -71,7 +71,7 @@ def get_songs_from_database(
 
     def sorting_formula(element):
         pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
-        tempo_diff = abs(slider_values["tempo"] - float(element["tempo"])) / 140
+        tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
         energy_diff = abs(slider_values["energy"] - float(element["energy"]))
         priority = pop_diff + tempo_diff + energy_diff
         return priority

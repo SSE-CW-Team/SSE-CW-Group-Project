@@ -32,7 +32,6 @@
   margin: 0 auto; /* This will center the logo horizontally */
   width: 80%; /* Adjust the width as needed */
   height: auto;
-  margin-right: 10px; /* Add some margin between the logo and text */
 }
 
 
@@ -163,6 +162,24 @@ label {
     margin-bottom: 10px;
 }
 
+.logo {
+  max-width: 50%; /* Adjust the size as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.title {
+  display: flex;
+  flex-direction: column; /* Arrange the children in a column layout */
+  align-items: center; /* Center items horizontally */
+}
+
+.title-text {
+  font-size: 24px; /* Adjust the font size as needed */
+  color: grey;
+  text-align: center;
+  margin-top: 10px;
+}
+
 /* Apply the grid layout to the checkboxes */
 input[type="checkbox"] {
     margin-right: 5px; /* Add some space between the checkbox and the label */
@@ -170,6 +187,7 @@ input[type="checkbox"] {
 
 .container {
     position: fixed;
+    text-align: center;
 }
 
 .container, .export-container {
@@ -373,6 +391,11 @@ margin-top: 10px;
 
 #selectedList li {
 margin-bottom: 5px; 
+}
+
+.success-container {
+  text-align: center;
+  margin-top: 20px;
 }
 
 table {

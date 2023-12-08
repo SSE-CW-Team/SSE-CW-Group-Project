@@ -146,7 +146,7 @@ def fetch_liked_songs():
     session["lengths"] = [
         seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
     ]
-    return redirect(url_for("export", _external=True))
+    return redirect(url_for("export", _external=True, success=False))
 
 
 def get_spotify_session():
@@ -212,13 +212,17 @@ def fetch_songs():
         session["lengths"] = [
             seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
         ]
-        return redirect(url_for("export", _external=True))
+        return redirect(url_for("export", _external=True, success=False))
 
 
 @app.route("/export")
 def export():
+    success = False
+    if session.get("success", False) is True:
+        success = True
+        session.pop("success")
     return render_template(
-        "export.html", graph_data=session["graph_data"], workout=session["workout"]
+        "export.html", graph_data=session["graph_data"], workout=session["workout"], success=success
     )
 
 
@@ -279,7 +283,8 @@ def create_playlist():
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:
         return "Error adding songs to playlist"
-    return redirect(url_for("success", _external=True))
+    session['success'] = True
+    return redirect(url_for("export", _external=True))
 
 
 def get_spotify_oauth():
@@ -289,15 +294,6 @@ def get_spotify_oauth():
         redirect_uri=url_for("_redirect", _external=True),
         scope=scopes,
     )
-
-
-@app.route("/success", methods=["GET"])
-def success():
-    try:
-        session.pop("token info")
-    except KeyError:
-        pass
-    return render_template("success.html")
 
 
 def string_to_list(input_string):

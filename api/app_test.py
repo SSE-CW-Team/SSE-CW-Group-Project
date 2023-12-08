@@ -39,11 +39,6 @@ def test_fetch_songs_redirect(client):
     assert response.status_code == 302
 
 
-def test_success_route(client):
-    response = client.get("/success")
-    assert response.status_code == 200
-
-
 def test_unsafe_input_sanitization(client):
     unsafe_name = "<script>alert('Hello world');</script>"
     client.post(

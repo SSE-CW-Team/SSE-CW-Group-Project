@@ -25,13 +25,11 @@
           <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Your Logo" class="logo" />
         </div>
         <div id="title-text-div">
-          <h1 class="title-text" class="general">Your workout Companion</h1>
-          <p class="" id="explanation">Fill in the details below to generate a personalized workout playlist.</p>
+          <p class="title-text" class="general">Discover your perfect workout playlist here</p>
         </div>
       </div>
-
       <form id="inputForm" action="{{ url_for('fetch_songs') }}" method="post">
-        <label>Workout Type:</label>
+        <label>Choose workout type:</label>
         <div id="workout-options" class="form-group">
           <div class="workout-option">
             <label for="general">General</label>

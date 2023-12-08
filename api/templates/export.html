@@ -45,8 +45,12 @@
         </tbody>
       </table>
     </div>
-
-    <div class="form-container">
+    {% if success %}
+      <p>Playlist successfully exported!</p>
+      <form action="{{ session['playlist_url'] }}" method="get">
+        <button class='main-button' type="submit">Go to Playlist</button>
+      </form>
+    {% else %}
       <form action="/generate" method="post">
         <div class="form-group" id = "name-input">
           <label for="name">Playlist name</label>
@@ -56,11 +60,10 @@
           <label for="description">Playlist description</label>
           <input type="text" id="description" name="description" value="" maxlength="300">
         </div>
-        <button type="submit" class="export-button">Export to Spotify</button>
+        <button type="submit" class="main-button">Export to Spotify</button>
       </form>
-    </div> <!-- Close form-container div -->
+    {% endif %}
   </div>
-  
   <div class="export-container" id = "right">
     <div id="chart-container">
       <div id="d3Chart"></div>
@@ -106,8 +109,8 @@
 
   // Set up scales
   var x = d3.scaleLinear()
-    .domain([0, songIds.length]) // Start x-axis at 0
-    .range([0, width]);
+    .domain([1, songIds.length]) // Start x-axis at 0
+    .range([1, width]);
 
   var y = d3.scaleLinear()
     .domain([0, d3.max(runTimes)])

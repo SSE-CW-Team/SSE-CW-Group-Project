@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tempo - Your Workout Companion</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/x-icon">
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles/style.css')}}"
@@ -22,7 +23,7 @@
     <div class="container" id="home-page-container">
       <div class="title">
         <div id="title-logo-div">
-          <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Your Logo" class="logo" />
+          <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Tempo Logo" class="logo" />
         </div>
         <div id="title-text-div">
           <p class="title-text" class="general">Discover your perfect workout playlist here</p>

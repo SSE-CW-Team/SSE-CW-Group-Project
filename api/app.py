@@ -118,8 +118,6 @@ def get_songs_from_database(
 @cache.memoize(timeout=900)
 def fetch_liked_songs():
     sp = get_spotify_session()
-    user_info = sp.me()
-    user_id = user_info["id"]
     if sp is None:
         print("Spotify session could not be created.")
         return None

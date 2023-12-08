@@ -485,3 +485,32 @@ table {
     align-items: center;
     height: 100%; /* Optionally, set the height to 100% to fill the entire container */
   }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px; /* Set a width for the tooltip */
+    background-color: #333;
+    color: #fff;
+    text-align: left; /* Align text to the left for a horizontal appearance */
+    border-radius: 6px;
+    font-size: small;
+    padding: 15px; /* Increase padding for a wider appearance */
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 100%;
+    transform: translate(10px, -50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }

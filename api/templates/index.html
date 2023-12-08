@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tempo - Your Workout Companion</title>
-    <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/x-icon" />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles/style.css')}}"
@@ -246,7 +246,15 @@
           </div>
           <div class="form-group">
             <div class="range-container">
-              <label for="danceability">Danceability:</label>
+              <label for="danceability"
+                ><span class="tooltip"
+                  >Danceability:<span class="tooltiptext"
+                    ><span style="font-style: italic">From Spotify: </span>Danceability describes how suitable a track
+                    is for dancing based on a combination of musical elements including tempo, rhythm stability, beat
+                    strength, and overall regularity.</span
+                  >
+                </span></label
+              >
               <input type="range" id="danceability" name="danceabilityValue" min="0" max="1" value="0.5" step="0.01" />
               <span class="low-label">Low</span>
               <span class="high-label">High</span>
@@ -254,7 +262,16 @@
           </div>
           <div class="form-group">
             <div class="range-container">
-              <label for="energy">Energy:</label>
+              <label for="energy"
+                ><span class="tooltip"
+                  >Energy:<span class="tooltiptext"
+                    ><span style="font-style: italic">From Spotify: </span>Energy is a measure from 0.0 to 1.0 and
+                    represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast,
+                    loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the
+                    scale.</span
+                  >
+                </span></label
+              >
               <input type="range" id="energy" name="energyValue" min="0" max="1" value="0.5" step="0.01" />
               <span class="low-label">Low</span>
               <span class="high-label">High</span>

@@ -53,6 +53,7 @@ def get_songs_from_database(
             "popularity",
             "tempo",
             "energy",
+            "danceability"
         )
         .in_("track_genre", genres)
     )
@@ -70,22 +71,24 @@ def get_songs_from_database(
         query = query.lte("liveness", 0.5)
 
     response = query.execute()
+    data = response.data
 
     def sorting_formula(element):
         pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
         tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
         energy_diff = abs(slider_values["energy"] - float(element["energy"]))
-        priority = pop_diff + tempo_diff + energy_diff
+        dance_diff = abs(slider_values["danceability"] - float(element['danceability']))
+        priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
         return priority
-
-    data = response.data
 
     if liked_songs:
         other_songs = [song for song in data if song["track_id"] not in liked_songs]
-        other_songs = sorted(other_songs, key=sorting_formula)
+        other_songs = sorted(other_songs, key=sorting_formula, reverse=True)
         prioritized_songs = [song for song in data if song["track_id"] in liked_songs]
-        prioritized_songs = sorted(prioritized_songs, key=sorting_formula)
+        prioritized_songs = sorted(prioritized_songs, key=sorting_formula, reverse=True)
         data = prioritized_songs + other_songs
+    else:
+        data = sorted(data, key=sorting_formula, reverse=True)
 
     selected = []
     total_duration = 0

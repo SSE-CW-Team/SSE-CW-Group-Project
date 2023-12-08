@@ -312,7 +312,6 @@ function handleWorkoutSelection(workoutType) {
 }
 
 function updateh1s(workoutType) {
-  const h1Element = document.querySelector("h1");
   let color;
 
   switch (workoutType) {
@@ -335,11 +334,10 @@ function updateh1s(workoutType) {
     default:
       color = "#ffffff";
   }
-
-  h1Element.style.color = color;
 }
 
 function updateSliderColors(workoutType) {
+
   const sliders = document.querySelectorAll('input[type="range"]');
   let backgroundColor;
 

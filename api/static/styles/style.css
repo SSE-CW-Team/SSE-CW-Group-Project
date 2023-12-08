@@ -156,6 +156,7 @@ body::before {
     background-color: #2980b9;
   }
 
+/* Style for each checkbox label */
 label {
     text-align: left;
     display: block;
@@ -163,7 +164,7 @@ label {
     position: relative;
 }
 
-.advanced-label {
+label .advanced-label {
   text-align: center;
 }
 

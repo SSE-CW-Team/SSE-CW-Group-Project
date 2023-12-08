@@ -3,16 +3,17 @@ from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client  # type: ignore
 from dotenv import load_dotenv  # type: ignore
-from flask_caching import Cache  # type: ignore
 from datetime import timedelta
 import bleach  # type: ignore
 import os
+from cachelib import SimpleCache
 
 load_dotenv()
 
 app = Flask(__name__)
 
-cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
+cache = SimpleCache()
+
 client_id = os.environ["CLIENT_ID"]
 client_secret = os.environ["CLIENT_SECRET"]
 app.secret_key = os.environ["SECRET_KEY"]
@@ -53,7 +54,7 @@ def get_songs_from_database(
             "popularity",
             "tempo",
             "energy",
-            "danceability"
+            "danceability",
         )
         .in_("track_genre", genres)
     )
@@ -77,7 +78,7 @@ def get_songs_from_database(
         pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
         tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
         energy_diff = abs(slider_values["energy"] - float(element["energy"]))
-        dance_diff = abs(slider_values["danceability"] - float(element['danceability']))
+        dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
         priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
         return priority
 
@@ -118,23 +119,24 @@ def get_songs_from_database(
 
 
 @app.route("/fetch_liked_songs")
-@cache.memoize(timeout=900)
 def fetch_liked_songs():
     sp = get_spotify_session()
     if sp is None:
         print("Spotify session could not be created.")
         return None
-    liked_songs = []
-
-    try:
-        results = sp.current_user_saved_tracks(
-            limit=50
-        )  # Fetch up to 50 items per call
-        while results:
-            liked_songs.extend([item["track"]["id"] for item in results["items"]])
-            results = sp.next(results) if results["next"] else None
-    except Exception as e:
-        print(f"Error fetching user's liked songs: {e}")
+    liked_songs = cache.get("liked_songs")
+    if liked_songs is None:
+        liked_songs = []
+        try:
+            results = sp.current_user_saved_tracks(
+                limit=50
+            )  # Fetch up to 50 items per call
+            while results:
+                liked_songs.extend([item["track"]["id"] for item in results["items"]])
+                results = sp.next(results) if results["next"] else None
+            cache.set("liked_songs", liked_songs, timeout=900)
+        except Exception as e:
+            print(f"Error fetching user's liked songs: {e}")
 
     requested_data = get_songs_from_database(
         session["run_length"],

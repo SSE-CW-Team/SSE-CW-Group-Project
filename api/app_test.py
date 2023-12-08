@@ -57,7 +57,7 @@ def sorting_formula(element, slider_values):
     pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
     tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
     energy_diff = abs(slider_values["energy"] - float(element["energy"]))
-    dance_diff = abs(slider_values["danceability"] - float(element['danceability']))
+    dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
     priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
     return priority
 
@@ -65,21 +65,21 @@ def sorting_formula(element, slider_values):
 def test_prioritise_tempo():
     # Should choose el1
     el1 = {}
-    el1['popularity'] = "50"
-    el1['tempo'] = "120"
-    el1['energy'] = "0"
-    el1['danceability'] = "0"
+    el1["popularity"] = "50"
+    el1["tempo"] = "120"
+    el1["energy"] = "0"
+    el1["danceability"] = "0"
     el2 = {}
-    el2['popularity'] = "50"
-    el2['tempo'] = "168"
-    el2['energy'] = "0.2"
-    el2['danceability'] = "0"
+    el2["popularity"] = "50"
+    el2["tempo"] = "168"
+    el2["energy"] = "0.2"
+    el2["danceability"] = "0"
 
     slider_values = {}
-    slider_values['popularity'] = 50
-    slider_values['tempo'] = 135
-    slider_values['energy'] = 0.2
-    slider_values['danceability'] = 0
+    slider_values["popularity"] = 50
+    slider_values["tempo"] = 135
+    slider_values["energy"] = 0.2
+    slider_values["danceability"] = 0
 
     el1_priority = sorting_formula(el1, slider_values)
     el2_priority = sorting_formula(el2, slider_values)
@@ -89,20 +89,20 @@ def test_prioritise_tempo():
 def test_prioritise_tempo_not_too_much():
     # Should choose el2
     el1 = {}
-    el1['popularity'] = "50"
-    el1['tempo'] = "120"
-    el1['energy'] = "0"
-    el1['danceability'] = "0"
+    el1["popularity"] = "50"
+    el1["tempo"] = "120"
+    el1["energy"] = "0"
+    el1["danceability"] = "0"
     el2 = {}
-    el2['popularity'] = "50"
-    el2['tempo'] = "168"
-    el2['energy'] = "0.2"
-    el2['danceability'] = "0"
+    el2["popularity"] = "50"
+    el2["tempo"] = "168"
+    el2["energy"] = "0.2"
+    el2["danceability"] = "0"
     slider_values = {}
-    slider_values['popularity'] = 50
-    slider_values['tempo'] = 140
-    slider_values['energy'] = 0.2
-    slider_values['danceability'] = 0
+    slider_values["popularity"] = 50
+    slider_values["tempo"] = 140
+    slider_values["energy"] = 0.2
+    slider_values["danceability"] = 0
 
     el1_priority = sorting_formula(el1, slider_values)
     el2_priority = sorting_formula(el2, slider_values)

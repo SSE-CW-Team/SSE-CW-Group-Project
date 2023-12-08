@@ -3,6 +3,7 @@ from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client  # type: ignore
 from dotenv import load_dotenv  # type: ignore
+from flask_caching import Cache
 from datetime import timedelta
 import bleach  # type: ignore
 import os
@@ -11,6 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 client_id = os.environ["CLIENT_ID"]
 client_secret = os.environ["CLIENT_SECRET"]
 app.secret_key = os.environ["SECRET_KEY"]
@@ -113,8 +115,11 @@ def get_songs_from_database(
 
 
 @app.route("/fetch_liked_songs")
+@cache.memoize(timeout=900)
 def fetch_liked_songs():
     sp = get_spotify_session()
+    user_info = sp.me()
+    user_id = user_info["id"]
     if sp is None:
         print("Spotify session could not be created.")
         return None
@@ -222,7 +227,10 @@ def export():
         success = True
         session.pop("success")
     return render_template(
-        "export.html", graph_data=session["graph_data"], workout=session["workout"], success=success
+        "export.html",
+        graph_data=session["graph_data"],
+        workout=session["workout"],
+        success=success,
     )
 
 
@@ -283,7 +291,7 @@ def create_playlist():
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:
         return "Error adding songs to playlist"
-    session['success'] = True
+    session["success"] = True
     return redirect(url_for("export", _external=True))
 
 

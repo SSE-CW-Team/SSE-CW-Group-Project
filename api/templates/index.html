@@ -4,8 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tempo - Your Workout Companion</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/style.css')}}"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
     <script src="{{ url_for('static', filename='scripts/metronome.js')}}"></script>
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_cyclist.png')}}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_default.png')}}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_sprinter.png')}}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_weightlifter.png')}}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_meditation.png')}}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/background_neon_boxer.png')}}" />
     <audio id="tickSound" data-url="{{ url_for('static', filename='sounds/tick.mp3') }}"></audio>
   </head>
   <body class="general">
@@ -15,7 +25,7 @@
           <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Your Logo" class="logo" />
         </div>
         <div id="title-text-div">
-          <h1 class="title-text" class="general">Tempo: Workout Playlist Generator</h1>
+          <h1 class="title-text" class="general">Your workout Companion</h1>
           <p class="" id="explanation">Fill in the details below to generate a personalized workout playlist.</p>
         </div>
       </div>
@@ -219,21 +229,13 @@
         </div>
         <div id="advanced-search-container" class="advanced-search-container">
           <div class="checkbox-container">
-            <label> 
-              <input type="checkbox" name="allowExplicit" id="allowExplicit" /> Include explicit songs
-            </label>
+            <label> <input type="checkbox" name="allowExplicit" id="allowExplicit" /> Include explicit songs </label>
+            <label> <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly" /> Instrumentals only </label>
+            <label> <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic </label>
+            <label> <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions </label>
             <label>
-              <input type="checkbox" name="instrumentalOnly" id="instrumentalOnly" /> Instrumentals only
+              <input type="checkbox" name="includeLikedSongs" id="includeLikedSongs" /> Include liked songs
             </label>
-            <label>
-              <input type="checkbox" name="includeAcoustic" id="includeAcoustic" /> Include acoustic
-            </label>
-            <label>
-              <input type="checkbox" name="includeLive" id="includeLive" /> Include live versions
-            </label>
-            <label>
-              <input type="checkbox" name="includeLikedSongs" id="includeLikedSongs"> Include liked songs
-          </label>
           </div>
           <div class="form-group">
             <label for="popularity">Popularity:</label>

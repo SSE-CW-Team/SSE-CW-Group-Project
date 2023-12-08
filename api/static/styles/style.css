@@ -156,10 +156,15 @@ body::before {
     background-color: #2980b9;
   }
 
-/* Style for each checkbox label */
 label {
+    text-align: left;
     display: block;
     margin-bottom: 10px;
+    position: relative;
+}
+
+.advanced-label {
+  text-align: center;
 }
 
 .logo {
@@ -235,7 +240,7 @@ h3 {
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: left;
 }
 
@@ -406,7 +411,29 @@ table {
     margin-bottom: 20px;
   }
 
+.range-container {
+    position: relative;
+}
 
+  .low-label,
+  .high-label {
+      margin: 2px 0 5px;
+      bottom: -1.5em; /* Adjust this value as needed for vertical alignment */
+      display: block;
+      width: 50%; /* Set the width to 50% for each label */
+      position: absolute;
+  }
+  
+  .low-label {
+    text-align: left;
+      left: 0;
+  }
+  
+  .high-label {
+    text-align: right;
+    right: 0;
+    transform: translateX(20px);
+  }
   
   thead td {
     border-bottom: 2px solid #3498db;

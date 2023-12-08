@@ -289,7 +289,10 @@ def get_spotify_oauth():
 
 @app.route("/success", methods=["GET"])
 def success():
-    session.pop("token info")
+    try:
+        session.pop("token info")
+    except KeyError:
+        pass
     return render_template("success.html")
 
 

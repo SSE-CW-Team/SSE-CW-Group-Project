@@ -46,7 +46,9 @@ def test_success_route(client):
 
 def test_unsafe_input_sanitization(client):
     unsafe_name = "<script>alert('Hello world');</script>"
-    client.post("/generate", data={"name": unsafe_name, "description": "my_description"})
+    client.post(
+        "/generate", data={"name": unsafe_name, "description": "my_description"}
+    )
     # Check that the sanitized name is stored in the session
     with client.session_transaction() as session:
         sanitized_name = session["new_playlist_headers"]["name"]

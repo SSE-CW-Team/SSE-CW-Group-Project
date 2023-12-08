@@ -90,7 +90,7 @@ def get_songs_from_database(
 
     for i in range(len(data)):
         song = data[i]
-        if i != 0 and song['track_name'] == data[i-1]['track_name']:
+        if i != 0 and song["track_name"] == data[i - 1]["track_name"]:
             continue
         if total_duration + song["duration_ms"] <= run_length_ms:
             selected.append(song)
@@ -105,11 +105,9 @@ def get_songs_from_database(
     current_time = 0
 
     for song in selected:
-        song_length = int(song["duration_ms"]) / 1000
+        song_length = (int(song["duration_ms"]) / 1000) / 60
+        graph_data.append({"name": song["track_name"], "time": current_time})
         current_time += song_length
-        graph_data.append(
-            {"name": song["track_name"], "time": current_time, "distance": 10}
-        )
 
     return selected, total_duration, graph_data
 
@@ -177,6 +175,8 @@ def fetch_songs():
         "tempo": float(request.form.get("tempoValue")),
     }
 
+    session["workout"] = request.form.get("workout")
+
     # Dictionary for boolean flags
     bool_flags = {
         "allowExplicit": request.form.get("allowExplicit") == "on",
@@ -191,6 +191,8 @@ def fetch_songs():
     session["run_length"] = run_length
     session["bool_flags"] = bool_flags
     session["genres"] = genres
+
+    print(genres)
 
     if session["includeLikedSongs"]:
         sp_oauth = get_spotify_oauth()
@@ -215,7 +217,9 @@ def fetch_songs():
 
 @app.route("/export")
 def export():
-    return render_template("export.html", graph_data=session["graph_data"])
+    return render_template(
+        "export.html", graph_data=session["graph_data"], workout=session["workout"]
+    )
 
 
 # Request Spotify to log the user in

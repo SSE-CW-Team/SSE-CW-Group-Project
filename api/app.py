@@ -3,7 +3,7 @@ from spotipy.oauth2 import SpotifyOAuth  # type: ignore
 from spotipy import Spotify  # type: ignore
 from supabase import create_client, Client  # type: ignore
 from dotenv import load_dotenv  # type: ignore
-from flask_caching import Cache
+from flask_caching import Cache  # type: ignore
 from datetime import timedelta
 import bleach  # type: ignore
 import os

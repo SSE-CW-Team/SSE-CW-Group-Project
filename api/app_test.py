@@ -54,10 +54,10 @@ def test_unsafe_input_sanitization(client):
 
 
 slider_values = {}
-slider_values["popularity"] = 50
-slider_values["tempo"] = 135
+slider_values["popularity"] = 50.0
+slider_values["tempo"] = 135.0
 slider_values["energy"] = 0.2
-slider_values["danceability"] = 0
+slider_values["danceability"] = 0.0
 
 bool_flags = {
     "allowExplicit": False,
@@ -86,10 +86,10 @@ def test_prioritise_tempo():
     assert el1_priority > el2_priority
 
 
-slider_values["popularity"] = 50
-slider_values["tempo"] = 140
+slider_values["popularity"] = 50.0
+slider_values["tempo"] = 140.0
 slider_values["energy"] = 0.2
-slider_values["danceability"] = 0
+slider_values["danceability"] = 0.0
 
 
 def test_prioritise_tempo_not_too_much():

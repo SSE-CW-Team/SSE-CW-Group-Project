@@ -41,7 +41,7 @@ def index():
 
 def sorting_formula(element, slider_values):
     pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
-    tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 170
+    tempo_diff = 3 * abs(slider_values["tempo"] - float(element["tempo"])) / 170
     energy_diff = abs(slider_values["energy"] - float(element["energy"]))
     dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
     priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)

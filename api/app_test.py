@@ -53,12 +53,6 @@ def test_unsafe_input_sanitization(client):
     assert "<script>" not in sanitized_name
 
 
-slider_values = {}
-slider_values["popularity"] = 50.0
-slider_values["tempo"] = 135.0
-slider_values["energy"] = 0.2
-slider_values["danceability"] = 0.0
-
 bool_flags = {
     "allowExplicit": False,
     "instrumentalOnly": False,
@@ -70,6 +64,12 @@ bool_flags = {
 
 def test_prioritise_tempo():
     # Should choose el1
+    slider_values = {
+        "popularity": 50.0,
+        "tempo": 135.0,
+        "energy": 0.2,
+        "danceability": 0.0
+    }
     el1 = {}
     el1["popularity"] = "50"
     el1["tempo"] = "120"
@@ -81,19 +81,19 @@ def test_prioritise_tempo():
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
 
-    el1_priority = sorting_formula(el1, slider_values)
-    el2_priority = sorting_formula(el2, slider_values)
+    el1_priority = sorting_formula(el1, slider_values=slider_values)
+    el2_priority = sorting_formula(el2, slider_values=slider_values)
     assert el1_priority > el2_priority
-
-
-slider_values["popularity"] = 50.0
-slider_values["tempo"] = 140.0
-slider_values["energy"] = 0.2
-slider_values["danceability"] = 0.0
 
 
 def test_prioritise_tempo_not_too_much():
     # Should choose el2
+    slider_values = {
+        "popularity": 50.0,
+        "tempo": 140.0,
+        "energy": 0.2,
+        "danceability": 0.0
+    }
     el1 = {}
     el1["popularity"] = "50"
     el1["tempo"] = "120"
@@ -104,10 +104,9 @@ def test_prioritise_tempo_not_too_much():
     el2["tempo"] = "168"
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
-    slider_values = {}
 
-    el1_priority = sorting_formula(el1, slider_values)
-    el2_priority = sorting_formula(el2, slider_values)
+    el1_priority = sorting_formula(el1, slider_values=slider_values)
+    el2_priority = sorting_formula(el2, slider_values=slider_values)
     assert el1_priority < el2_priority
 
 

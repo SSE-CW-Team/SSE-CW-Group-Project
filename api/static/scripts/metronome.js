@@ -2,7 +2,7 @@ let audioContext;
 let tickBuffer;
 let tickSource;
 let isMetronomePlaying = false;
-let baseVolume = 1; // Adjust this value to control the base volume
+let baseVolume = 2; // Adjust this value to control the base volume
 
 function updateTempoValue() {
   const tempoInput = document.getElementById("tempo");

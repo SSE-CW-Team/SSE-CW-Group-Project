@@ -7,6 +7,7 @@ from datetime import timedelta
 import bleach  # type: ignore
 import os
 from cachelib import SimpleCache
+from random import shuffle
 
 load_dotenv()
 
@@ -109,6 +110,8 @@ def get_songs_from_database(
     # Generate data for graph:
     graph_data = []
     current_time = 0
+    
+    shuffle(selected)
 
     for song in selected:
         song_length = (int(song["duration_ms"]) / 1000) / 60

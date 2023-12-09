@@ -426,6 +426,8 @@ table {
       display: block;
       width: 50%; /* Set the width to 50% for each label */
       position: absolute;
+      color: gray;
+      size: 0.9em;
   }
   
   .low-label {

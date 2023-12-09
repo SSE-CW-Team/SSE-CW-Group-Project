@@ -1,0 +1,210 @@
+.advanced-search-container {
+    display: none;
+  }
+
+.advanced-form-group {
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+}
+
+.alert-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+  }
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url("../images/running_background.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.5); /* White color with 50% opacity */
+    z-index: -1; /* Ensure the overlay is behind the content */
+}
+
+/* Style for the checkboxes container */
+.checkbox-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns with equal width */
+    gap: 10px; /* Adjust the gap between checkboxes */
+}
+
+/* Style for each checkbox label */
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Apply the grid layout to the checkboxes */
+input[type="checkbox"] {
+    margin-right: 5px; /* Add some space between the checkbox and the label */
+}
+
+.container {
+    background-color: #1a1a1a; /* Dark background color */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    position: fixed;
+    top: 5vh;
+    height: 80vh; /* Set a specific height, adjust as needed */
+    overflow-y: auto; /* Enable vertical scrolling within the container */
+}
+
+h1 {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #f70000; /* Dark gray color for text */
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+
+/* Style for the range input */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #ff4e50, #fc913a); /* Gradient background */
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+/* Change the appearance of the thumb/handle */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff; /* White color for the thumb */
+    cursor: pointer;
+    transition: background 0.3s;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
+}
+
+/* Change thumb color on hover */
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #e6e6e6; /* Light grey color on hover */
+}
+
+/* Change thumb color on active state (while dragging) */
+input[type="range"]:active::-webkit-slider-thumb {
+    background: #cccccc; /* Darker grey color while dragging */
+}
+
+/* Style the value display next to the slider */
+span#liked_songs_value {
+    display: inline-block;
+    margin-left: 10px;
+    font-weight: bold;
+    color: #ffffff; /* White color for the value display */
+}
+
+label {
+    padding: 5px;
+}
+
+.main-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #28a745; /* Green color for the button */
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.main-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.explanation {
+    font-size: 0.9rem;
+    color: #6c757d; /* Grey color for explanation text */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.remove {
+    margin-left: 10px; 
+    padding: 5px 10px;
+    background-color: #ff5757; 
+    color: #fff; 
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    width: auto;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove:hover {
+    background-color: #fb2e2e; 
+}
+
+#selectedList li {
+    margin-bottom: 5px; /
+  }
+
+#genreList,
+#selectedOptions {
+margin-top: 10px; 
+}
+
+#selectedList li {
+margin-bottom: 5px; 
+}

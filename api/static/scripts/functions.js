@@ -1,5 +1,3 @@
-// script.js
-
 // Function to filter options based on user input
 function filterOptions() {
   updateLikedSongsValue();
@@ -214,7 +212,6 @@ function getSelectedGenres() {
 // Function to update default values based on selected workout
 function updateDefaultValues(workout) {
   var tempo = 0;
-  var runLength = 0;
   var danceability = 0.5;
   var energy = 0.5;
   var defaultGenres = [];
@@ -264,10 +261,10 @@ function updateDefaultValues(workout) {
   document.getElementById("energy").value = energy;
 
   updateTempoValue();
-  handleWorkoutSelection(workout);
 
   // Update genres in the selected list
   updateGenresList(defaultGenres);
+  handleWorkoutSelection(workout);
 }
 
 // Function to update the genres list based on selected default genres
@@ -339,13 +336,13 @@ function updateSliderColours(workoutType) {
   const sliders = document.querySelectorAll('input[type="range"]');
   const genPlaylistButton = document.getElementById("generatePlaylistButton");
   const metronomeButton = document.getElementById("metronome-button");
+  const removeButtons = document.querySelectorAll(".remove");
 
   let backgroundColour;
   let buttonColour;
   let textColour;
-
+  let removeColour;
   let hoverBackground;
-  let hoverButtonColor;
 
   switch (workoutType) {
     case "running":
@@ -353,41 +350,53 @@ function updateSliderColours(workoutType) {
       buttonColour = "#00cc00";
       textColour = "#ffffff"; // White text for better visibility
       hoverBackground = "#009900";
+      removeColour = "#0a3808";
       break;
     case "boxing":
       backgroundColour = "linear-gradient(to right, #8b008b, #e600e6)";
       buttonColour = "#e600e6";
       textColour = "#ffffff";
       hoverBackground = "#990099";
+      removeColour = "#412275";
       break;
     case "cycling":
       backgroundColour = "linear-gradient(to right, #001f3f, #00BFFF)";
       buttonColour = "#00BFFF";
       textColour = "#ffffff";
       hoverBackground = "#007acc";
+      removeColour = "#080d38";
       break;
     case "yoga":
       backgroundColour = "linear-gradient(to right, #b3b300, #ffff00)";
       buttonColour = "#b3b300";
       textColour = "#000000"; // Black text for better visibility
       hoverBackground = "#e6e600";
+      removeColour = "#adad02";
       break;
     case "gym":
       backgroundColour = "linear-gradient(to right, #cc0000, #ff6600)";
       buttonColour = "#ff6600";
       textColour = "#ffffff";
       hoverBackground = "#ff3300";
+      removeColour = "#7a0202";
       break;
     default:
       backgroundColour = "linear-gradient(to right, #636262, #ffffff)";
       buttonColour = "#ffffff";
       textColour = "#000000";
       hoverBackground = "#c0c0c0";
+      removeColour = "#ffffff";
   }
 
   // Update background and text color of sliders
   sliders.forEach((slider) => {
     slider.style.background = backgroundColour;
+  });
+
+  removeButtons.forEach((button) => {
+    console.log("Changed style");
+    button.style.background = removeColour;
+    button.style.color = textColour;
   });
 
   // Update background and text color of the buttons

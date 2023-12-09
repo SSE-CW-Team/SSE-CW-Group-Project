@@ -337,7 +337,8 @@ function updateh1s(workoutType) {
 
 function updateSliderColours(workoutType) {
   const sliders = document.querySelectorAll('input[type="range"]');
-  const button = document.getElementById("generatePlaylistButton");
+  const genPlaylistButton = document.getElementById("generatePlaylistButton");
+  const metronomeButton = document.getElementById("metronome-button");
 
   let backgroundColour;
   let buttonColour;
@@ -352,42 +353,36 @@ function updateSliderColours(workoutType) {
       buttonColour = "#00cc00";
       textColour = "#ffffff"; // White text for better visibility
       hoverBackground = "#009900";
-      hoverButtonColor = "#ffffff";
       break;
     case "boxing":
       backgroundColour = "linear-gradient(to right, #8b008b, #e600e6)";
       buttonColour = "#e600e6";
       textColour = "#ffffff";
       hoverBackground = "#990099";
-      hoverButtonColor = "#ffffff";
       break;
     case "cycling":
       backgroundColour = "linear-gradient(to right, #001f3f, #00BFFF)";
       buttonColour = "#00BFFF";
       textColour = "#ffffff";
       hoverBackground = "#007acc";
-      hoverButtonColor = "#ffffff";
       break;
     case "yoga":
       backgroundColour = "linear-gradient(to right, #b3b300, #ffff00)";
       buttonColour = "#b3b300";
       textColour = "#000000"; // Black text for better visibility
       hoverBackground = "#e6e600";
-      hoverButtonColor = "#000000";
       break;
     case "gym":
       backgroundColour = "linear-gradient(to right, #cc0000, #ff6600)";
       buttonColour = "#ff6600";
       textColour = "#ffffff";
       hoverBackground = "#ff3300";
-      hoverButtonColor = "#ffffff";
       break;
     default:
       backgroundColour = "linear-gradient(to right, #636262, #ffffff)";
       buttonColour = "#ffffff";
       textColour = "#000000";
-      hoverBackground = "#474747";
-      hoverButtonColor = "#ffffff";
+      hoverBackground = "#c0c0c0";
   }
 
   // Update background and text color of sliders
@@ -395,19 +390,28 @@ function updateSliderColours(workoutType) {
     slider.style.background = backgroundColour;
   });
 
-  // Update background and text color of the button
-  button.style.background = buttonColour;
-  button.style.color = textColour;
+  // Update background and text color of the buttons
+  genPlaylistButton.style.background = buttonColour;
+  metronomeButton.style.background = buttonColour;
+
+  genPlaylistButton.style.color = textColour;
+  metronomeButton.style.color = textColour;
 
   // Add hover effect to the button
-  button.addEventListener("mouseover", function () {
-    button.style.background = hoverBackground;
-    button.style.color = hoverButtonColor;
+  genPlaylistButton.addEventListener("mouseover", function () {
+    genPlaylistButton.style.background = hoverBackground;
   });
 
-  button.addEventListener("mouseout", function () {
-    button.style.background = backgroundColour;
-    button.style.color = textColour;
+  genPlaylistButton.addEventListener("mouseout", function () {
+    genPlaylistButton.style.background = buttonColour;
+  });
+
+  metronomeButton.addEventListener("mouseover", function () {
+    metronomeButton.style.background = hoverBackground;
+  });
+
+  metronomeButton.addEventListener("mouseout", function () {
+    metronomeButton.style.background = buttonColour;
   });
 }
 

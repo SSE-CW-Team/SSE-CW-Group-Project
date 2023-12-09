@@ -1,3 +1,5 @@
+var selectedWorkoutType;
+
 // Function to filter options based on user input
 function filterOptions() {
   updateLikedSongsValue();
@@ -24,7 +26,6 @@ function checkStatus() {
   fetch("/check_task_status")
     .then((response) => response.json())
     .then((data) => {
-      console.log(data.status);
       if (data.status === "complete") {
         window.location.href = "/export";
       } else {
@@ -87,8 +88,7 @@ document.getElementById("genre").addEventListener("keydown", function (event) {
     event.preventDefault();
     addToSelectedList(); // Simulate a click on the most relevant value
   }
-  console.log(selectedList);
-});
+})
 
 // Function to add the selected option to the list
 function addOptionToSelectedList(selectedItem) {
@@ -100,6 +100,31 @@ function addOptionToSelectedList(selectedItem) {
   var removeButton = document.createElement("button");
   removeButton.textContent = "Remove";
   removeButton.classList.add("remove");
+  var removeTextColour = "#ffffff";
+  let removeColour;
+  switch (selectedWorkoutType) {
+    case "running":
+      removeColour = "#0a3808";
+      break;
+    case "boxing":
+      removeColour = "#412275";
+      break;
+    case "cycling":
+      removeColour = "#080d38";
+      break;
+    case "yoga":
+      removeColour = "#adad02";
+      removeTextColour = "#000000";
+      break;
+    case "gym":
+      removeColour = "#7a0202";
+      break;
+    default:
+      removeColour = "#737373";
+      removeTextColour = "#000000";
+    }
+  removeButton.style.background = removeColour;
+  removeButton.style.color = removeTextColour;
   removeButton.addEventListener("click", function () {
     var removedGenre = listItem.textContent.trim();
     listItem.remove();
@@ -149,7 +174,6 @@ function toggleAdvancedOptions() {
 // Function to print the current state of the selected list to the console
 function printSelectedListState() {
   var selectedGenres = getSelectedGenres();
-  console.log("Selected List State:", selectedGenres);
 }
 
 // Function to remove the selected option from the dropdown list
@@ -211,6 +235,7 @@ function getSelectedGenres() {
 
 // Function to update default values based on selected workout
 function updateDefaultValues(workout) {
+  selectedWorkoutType = workout;
   var tempo = 0;
   var danceability = 0.5;
   var energy = 0.5;
@@ -296,41 +321,15 @@ document.getElementsByName("workout").forEach(function (radio) {
   });
 });
 
-// Assuming you have a function to handle workout selection
 function handleWorkoutSelection(workoutType) {
   // Remove existing workout class from body
   document.body.classList.remove("running", "boxing", "cycling", "yoga", "gym", "general");
 
   // Add the selected workout class to body
   document.body.classList.add(workoutType);
-  updateh1s(workoutType);
   updateSliderColours(workoutType);
 }
 
-function updateh1s(workoutType) {
-  let colour;
-
-  switch (workoutType) {
-    case "running":
-      colour = "#39ff14";
-      break;
-    case "boxing":
-      colour = "#8a2be2";
-      break;
-    case "cycling":
-      colour = "#00bfff";
-      break;
-    case "yoga":
-      colour = "#ffff00";
-      break;
-    case "gym":
-      colour = "#ff3e3e";
-      break;
-
-    default:
-      colour = "#ffffff";
-  }
-}
 
 function updateSliderColours(workoutType) {
   const sliders = document.querySelectorAll('input[type="range"]');
@@ -385,7 +384,7 @@ function updateSliderColours(workoutType) {
       buttonColour = "#ffffff";
       textColour = "#000000";
       hoverBackground = "#c0c0c0";
-      removeColour = "#ffffff";
+      removeColour = "#737373";
   }
 
   // Update background and text color of sliders
@@ -393,11 +392,6 @@ function updateSliderColours(workoutType) {
     slider.style.background = backgroundColour;
   });
 
-  removeButtons.forEach((button) => {
-    console.log("Changed style");
-    button.style.background = removeColour;
-    button.style.color = textColour;
-  });
 
   // Update background and text color of the buttons
   genPlaylistButton.style.background = buttonColour;

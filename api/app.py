@@ -39,6 +39,15 @@ def index():
     return render_template("index.html")
 
 
+def sorting_formula(element, slider_values):
+    pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
+    tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 170
+    energy_diff = abs(slider_values["energy"] - float(element["energy"]))
+    dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
+    priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
+    return priority
+
+
 def get_songs_from_database(
     run_length_in_minutes, genres, slider_values, bool_flags, liked_songs=None
 ):
@@ -75,22 +84,14 @@ def get_songs_from_database(
     response = query.execute()
     data = response.data
 
-    def sorting_formula(element):
-        pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
-        tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
-        energy_diff = abs(slider_values["energy"] - float(element["energy"]))
-        dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
-        priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
-        return priority
-
     if liked_songs:
         other_songs = [song for song in data if song["track_id"] not in liked_songs]
-        other_songs = sorted(other_songs, key=sorting_formula, reverse=True)
+        other_songs = sorted(other_songs, key=lambda song: sorting_formula(song, slider_values), reverse=True)
         prioritized_songs = [song for song in data if song["track_id"] in liked_songs]
-        prioritized_songs = sorted(prioritized_songs, key=sorting_formula, reverse=True)
+        prioritized_songs = sorted(prioritized_songs, key=lambda song: sorting_formula(song, slider_values), reverse=True)
         data = prioritized_songs + other_songs
     else:
-        data = sorted(data, key=sorting_formula, reverse=True)
+        data = sorted(data, key=lambda song: sorting_formula(song, slider_values), reverse=True)
 
     selected = []
     total_duration = 0
@@ -110,7 +111,7 @@ def get_songs_from_database(
     # Generate data for graph:
     graph_data = []
     current_time = 0
-    
+
     shuffle(selected)
 
     for song in selected:
@@ -125,8 +126,7 @@ def get_songs_from_database(
 def fetch_liked_songs():
     sp = get_spotify_session()
     if sp is None:
-        print("Spotify session could not be created.")
-        return None
+        return "Spotify session could not be created."
     liked_songs = cache.get("liked_songs")
     if liked_songs is None:
         liked_songs = []
@@ -137,9 +137,9 @@ def fetch_liked_songs():
             while results:
                 liked_songs.extend([item["track"]["id"] for item in results["items"]])
                 results = sp.next(results) if results["next"] else None
-            cache.set("liked_songs", liked_songs, timeout=900)
-        except Exception as e:
-            print(f"Error fetching user's liked songs: {e}")
+            cache.set("liked_songs", liked_songs, timeout=900)  # Saved for 15 minutes
+        except Exception:
+            return "Error fetching user's liked songs"
 
     requested_data = get_songs_from_database(
         session["run_length"],
@@ -202,8 +202,6 @@ def fetch_songs():
     session["run_length"] = run_length
     session["bool_flags"] = bool_flags
     session["genres"] = genres
-
-    print(genres)
 
     if session["includeLikedSongs"]:
         sp_oauth = get_spotify_oauth()

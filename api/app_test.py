@@ -1,5 +1,6 @@
 from app import app
 from app import get_songs_from_database
+from app import sorting_formula
 import pytest
 
 sample_data = {
@@ -52,14 +53,19 @@ def test_unsafe_input_sanitization(client):
     assert "<script>" not in sanitized_name
 
 
-# copy of sorting formula with custom slider values
-def sorting_formula(element, slider_values):
-    pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
-    tempo_diff = 2 * abs(slider_values["tempo"] - float(element["tempo"])) / 140
-    energy_diff = abs(slider_values["energy"] - float(element["energy"]))
-    dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
-    priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
-    return priority
+slider_values = {}
+slider_values["popularity"] = 50
+slider_values["tempo"] = 135
+slider_values["energy"] = 0.2
+slider_values["danceability"] = 0
+
+bool_flags = {
+    "allowExplicit": False,
+    "instrumentalOnly": False,
+    "includeAcoustic": False,
+    "includeLikedSongs": False,
+    "includeLive": False,
+}
 
 
 def test_prioritise_tempo():
@@ -75,15 +81,15 @@ def test_prioritise_tempo():
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
 
-    slider_values = {}
-    slider_values["popularity"] = 50
-    slider_values["tempo"] = 135
-    slider_values["energy"] = 0.2
-    slider_values["danceability"] = 0
-
     el1_priority = sorting_formula(el1, slider_values)
     el2_priority = sorting_formula(el2, slider_values)
     assert el1_priority > el2_priority
+
+
+slider_values["popularity"] = 50
+slider_values["tempo"] = 140
+slider_values["energy"] = 0.2
+slider_values["danceability"] = 0
 
 
 def test_prioritise_tempo_not_too_much():
@@ -99,10 +105,6 @@ def test_prioritise_tempo_not_too_much():
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
     slider_values = {}
-    slider_values["popularity"] = 50
-    slider_values["tempo"] = 140
-    slider_values["energy"] = 0.2
-    slider_values["danceability"] = 0
 
     el1_priority = sorting_formula(el1, slider_values)
     el2_priority = sorting_formula(el2, slider_values)
@@ -113,13 +115,6 @@ def test_positive_mins_returns_data():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5, "danceability": 0.5}
-    bool_flags = {
-        "allowExplicit": False,
-        "instrumentalOnly": False,
-        "includeAcoustic": False,
-        "includeLikedSongs": False,
-        "includeLive": False,
-    }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[0] != []
 
 
@@ -127,11 +122,4 @@ def test_playlist_length_exceeds_run_length():
     mins = 30
     genres = ["pop", "rock", "hip-hop"]
     slider_values = {"popularity": 74, "tempo": 140, "energy": 0.5, "danceability": 0.5}
-    bool_flags = {
-        "allowExplicit": False,
-        "instrumentalOnly": False,
-        "includeAcoustic": False,
-        "includeLikedSongs": False,
-        "includeLive": False,
-    }
     assert get_songs_from_database(mins, genres, slider_values, bool_flags)[1] > mins

@@ -88,7 +88,20 @@ document.getElementById("genre").addEventListener("keydown", function (event) {
     event.preventDefault();
     addToSelectedList(); // Simulate a click on the most relevant value
   }
-})
+});
+
+// Event listener for input changes on the genre input field
+document.getElementById("genre").addEventListener("input", function (event) {
+  var inputElement = event.target;
+  var dropdownOptions = document.getElementById("genreList").getElementsByTagName("option");
+
+  var isOption = Array.from(dropdownOptions).some((option) => option.value === inputElement.value);
+
+  if (isOption) {
+    addToSelectedList(); // Add the genre to the selected list
+    inputElement.value = ""; // Clear the input field
+  }
+});
 
 // Function to add the selected option to the list
 function addOptionToSelectedList(selectedItem) {
@@ -122,7 +135,7 @@ function addOptionToSelectedList(selectedItem) {
     default:
       removeColour = "#737373";
       removeTextColour = "#000000";
-    }
+  }
   removeButton.style.background = removeColour;
   removeButton.style.color = removeTextColour;
   removeButton.addEventListener("click", function () {
@@ -288,6 +301,7 @@ function updateDefaultValues(workout) {
   updateTempoValue();
 
   // Update genres in the selected list
+  getSelectedGenres().forEach((genre) => addOptionBackToDropdown(genre));
   updateGenresList(defaultGenres);
   handleWorkoutSelection(workout);
 }
@@ -329,7 +343,6 @@ function handleWorkoutSelection(workoutType) {
   document.body.classList.add(workoutType);
   updateSliderColours(workoutType);
 }
-
 
 function updateSliderColours(workoutType) {
   const sliders = document.querySelectorAll('input[type="range"]');
@@ -391,7 +404,6 @@ function updateSliderColours(workoutType) {
   sliders.forEach((slider) => {
     slider.style.background = backgroundColour;
   });
-
 
   // Update background and text color of the buttons
   genPlaylistButton.style.background = buttonColour;

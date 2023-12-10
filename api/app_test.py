@@ -82,7 +82,7 @@ def test_prioritise_tempo():
     el2["tempo"] = "168"
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
-    el1["liked"] = False
+    el2["liked"] = False
 
     el1_priority = sorting_formula(el1, slider_values=slider_values)
     el2_priority = sorting_formula(el2, slider_values=slider_values)
@@ -108,7 +108,7 @@ def test_prioritise_tempo_not_too_much():
     el2["tempo"] = "168"
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
-    el1["liked"] = False
+    el2["liked"] = False
 
     el1_priority = sorting_formula(el1, slider_values=slider_values)
     el2_priority = sorting_formula(el2, slider_values=slider_values)

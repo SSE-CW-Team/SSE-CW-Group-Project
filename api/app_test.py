@@ -37,9 +37,10 @@ def test_login_redirect(client):
 
 def test_fetch_songs_redirect(client):
     response = client.post("/fetch_songs", data=sample_data)
-    assert response.status_code == 302
+    assert response.status_code == 302  # Redirect
 
 
+# Unsafe input of HTML tags should be sanitised
 def test_unsafe_input_sanitization(client):
     unsafe_name = "<script>alert('Hello world');</script>"
     client.post(
@@ -75,11 +76,13 @@ def test_prioritise_tempo():
     el1["tempo"] = "120"
     el1["energy"] = "0"
     el1["danceability"] = "0"
+    el1["liked"] = False
     el2 = {}
     el2["popularity"] = "50"
     el2["tempo"] = "168"
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
+    el1["liked"] = False
 
     el1_priority = sorting_formula(el1, slider_values=slider_values)
     el2_priority = sorting_formula(el2, slider_values=slider_values)
@@ -99,12 +102,64 @@ def test_prioritise_tempo_not_too_much():
     el1["tempo"] = "120"
     el1["energy"] = "0"
     el1["danceability"] = "0"
+    el1["liked"] = False
     el2 = {}
     el2["popularity"] = "50"
     el2["tempo"] = "168"
     el2["energy"] = "0.2"
     el2["danceability"] = "0"
+    el1["liked"] = False
 
+    el1_priority = sorting_formula(el1, slider_values=slider_values)
+    el2_priority = sorting_formula(el2, slider_values=slider_values)
+    assert el1_priority < el2_priority
+
+
+def test_prioritise_liked_songs():
+    # Should choose el2
+    slider_values = {
+        "popularity": 50.0,
+        "tempo": 140.0,
+        "energy": 0.2,
+        "danceability": 0.0
+    }
+    el1 = {}
+    el1["popularity"] = "70"
+    el1["tempo"] = "110"
+    el1["energy"] = "0.5"
+    el1["danceability"] = "0"
+    el1["liked"] = True
+    el2 = {}
+    el2["popularity"] = "60"
+    el2["tempo"] = "145"
+    el2["energy"] = "0.2"
+    el2["danceability"] = "0"
+    el2["liked"] = False
+    el1_priority = sorting_formula(el1, slider_values=slider_values)
+    el2_priority = sorting_formula(el2, slider_values=slider_values)
+    assert el1_priority > el2_priority
+
+
+def test_dont_prioritise_liked_songs_too_much():
+    # Should choose el2
+    slider_values = {
+        "popularity": 50.0,
+        "tempo": 140.0,
+        "energy": 0.2,
+        "danceability": 0.0
+    }
+    el1 = {}
+    el1["popularity"] = "70"
+    el1["tempo"] = "100"
+    el1["energy"] = "0.8"
+    el1["danceability"] = "0.6"
+    el1["liked"] = True
+    el2 = {}
+    el2["popularity"] = "60"
+    el2["tempo"] = "145"
+    el2["energy"] = "0.2"
+    el2["danceability"] = "0"
+    el2["liked"] = False
     el1_priority = sorting_formula(el1, slider_values=slider_values)
     el2_priority = sorting_formula(el2, slider_values=slider_values)
     assert el1_priority < el2_priority

@@ -45,7 +45,7 @@
         </tbody>
       </table>
     </div>
-    {% if success %}
+    {% if exported %}
       <p>Playlist successfully exported!</p>
       <form action="{{ session['playlist_url'] }}" method="get">
         <button class='main-button' type="submit">Go to Playlist</button>

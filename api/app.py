@@ -11,49 +11,69 @@ from random import shuffle
 
 load_dotenv()
 
+# APP CONFIGURATION #
+
 app = Flask(__name__)
 
 cache = SimpleCache()
 
-client_id = os.environ["CLIENT_ID"]
-client_secret = os.environ["CLIENT_SECRET"]
-app.secret_key = os.environ["SECRET_KEY"]
-
 # Set lifetime of session, to prevent session hijacking
 app.permanent_session_lifetime = timedelta(minutes=10)
+
+# The client information we send to Spotify so they can give us an access token
+client_id = os.environ["CLIENT_ID"]
+client_secret = os.environ["CLIENT_SECRET"]
+
+# Needed for creating Flask session
+app.secret_key = os.environ["SECRET_KEY"]
 
 # Initialize the Supabase client with project URL and public API key
 supabase_url = os.environ["SUPABASE_URL"]
 supabase_key = os.environ["SUPABASE_ANON_KEY"]
 supabase: Client = create_client(supabase_url, supabase_key)
 
-scopes = [  # The amount of access to the account that Spotify allows us
-    "playlist-modify-public",
-    "playlist-modify-private",
-    "user-library-read",
+scopes = [  # The amount of access to the account that Spotify will allow us
+    "playlist-modify-public",  # create playlist
+    "playlist-modify-private",  # create playlist
+    "user-library-read",  # fetch user's liked songs
 ]
 
 
+# APP ROUTES #
+
+# The home page.
+# This contains forms for the user to input details about the playlist they want
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# FUNCTIONS FOR SELECTING SONGS
 
+
+# The formula for choosing which songs to prioritise.
+# A song's priority is a function of the difference between the input values
+# and the actual song values for each slider characteristic. A song is also
+# prioritised further if it has been liked by the user.
 def sorting_formula(element, slider_values):
     pop_diff = abs(slider_values["popularity"] - float(element["popularity"])) / 100
     tempo_diff = 3 * abs(slider_values["tempo"] - float(element["tempo"])) / 170
     energy_diff = abs(slider_values["energy"] - float(element["energy"]))
     dance_diff = abs(slider_values["danceability"] - float(element["danceability"]))
-    priority = 5 - (pop_diff + tempo_diff + energy_diff + dance_diff)
+    priority = 6 - (pop_diff + tempo_diff + energy_diff + dance_diff)
+    if element["liked"] is True:
+        priority *= 1.4
     return priority
 
 
+# Function to retrieve the right number of songs from the database, according to the
+# requested length of the playlist. Returns a list of songs, the playlist's total
+# duration and the data needed to make the graph on the 'export' page.
 def get_songs_from_database(
-    run_length_in_minutes, genres, slider_values, bool_flags, liked_songs=None
+    run_length_in_minutes, genres, slider_values, bool_flags, liked_songs=[]
 ):
-    # Variables
+    # Conversion needed since duration data is stored in the database in ms
     run_length_ms = run_length_in_minutes * 60000
-    # Construct query
+    # Query to supabase
     query = (
         supabase.table("spotify_database")
         .select(
@@ -68,11 +88,11 @@ def get_songs_from_database(
         )
         .in_("track_genre", genres)
     )
-
+    # Eliminate songs which fail checkbox criteria
     if not bool_flags["allowExplicit"]:
         query = query.eq("explicit", False)
 
-    if bool_flags["instrumentalOnly"]:  # Adjust thresholds
+    if bool_flags["instrumentalOnly"]:
         query = query.gte("instrumentalness", 0.5)
 
     if not bool_flags["includeAcoustic"]:
@@ -84,20 +104,17 @@ def get_songs_from_database(
     response = query.execute()
     data = response.data
 
-    if liked_songs:
-        other_songs = [song for song in data if song["track_id"] not in liked_songs]
-        other_songs = sorted(other_songs, key=lambda song: sorting_formula(song, slider_values), reverse=True)
-        prioritized_songs = [song for song in data if song["track_id"] in liked_songs]
-        prioritized_songs = sorted(prioritized_songs, key=lambda song: sorting_formula(song, slider_values), reverse=True)
-        data = prioritized_songs + other_songs
-    else:
-        data = sorted(data, key=lambda song: sorting_formula(song, slider_values), reverse=True)
+    for song in data:
+        # 'True' will give the song a song a higher priority in the sorting algorithm
+        song['liked'] = song['track_id'] in liked_songs
+    data = sorted(data, key=lambda song: sorting_formula(song, slider_values), reverse=True)
 
     selected = []
     total_duration = 0
 
     for i in range(len(data)):
         song = data[i]
+        # Eliminate duplicates
         if i != 0 and song["track_name"] == data[i - 1]["track_name"]:
             continue
         if total_duration + song["duration_ms"] <= run_length_ms:
@@ -107,13 +124,11 @@ def get_songs_from_database(
             selected.append(song)
             total_duration += song["duration_ms"]
             break
+    shuffle(selected)
 
     # Generate data for graph:
     graph_data = []
     current_time = 0
-
-    shuffle(selected)
-
     for song in selected:
         song_length = (int(song["duration_ms"]) / 1000) / 60
         graph_data.append({"name": song["track_name"], "time": current_time})
@@ -122,11 +137,34 @@ def get_songs_from_database(
     return selected, total_duration, graph_data
 
 
+# Function which sends Spotify our details and receives a response
+def get_spotify_oauth():
+    return SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=url_for("_redirect", _external=True),
+        scope=scopes,
+    )
+
+
+# Function to set up Spotify client
+def get_spotify_session():
+    token_info = session.get("token info")
+    if not token_info or "access_token" not in token_info:
+        # Log for debugging
+        print("No token info available in session.")
+        return None
+    return Spotify(auth=token_info["access_token"])
+
+
+# Route for fetching liked songs
 @app.route("/fetch_liked_songs")
 def fetch_liked_songs():
     sp = get_spotify_session()
     if sp is None:
         return "Spotify session could not be created."
+    # Liked songs are cached for a limited time so the user doesn't have to wait
+    # for the liked song data to be retrieved multiple times
     liked_songs = cache.get("liked_songs")
     if liked_songs is None:
         liked_songs = []
@@ -157,18 +195,10 @@ def fetch_liked_songs():
     session["lengths"] = [
         seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
     ]
-    return redirect(url_for("export", _external=True, success=False))
+    return redirect(url_for("export", _external=True))
 
 
-def get_spotify_session():
-    token_info = session.get("token info")
-    if not token_info or "access_token" not in token_info:
-        # Log for debugging
-        print("No token info available in session.")
-        return None
-    return Spotify(auth=token_info["access_token"])
-
-
+# App route where songs are fetched
 @app.route("/fetch_songs", methods=["POST"])
 def fetch_songs():
     run_length = float(request.form.get("run_length"))
@@ -204,6 +234,7 @@ def fetch_songs():
     session["genres"] = genres
 
     if session["includeLikedSongs"]:
+        # Get user to log in so liked songs can be retrieved
         sp_oauth = get_spotify_oauth()
         authorise_url = sp_oauth.get_authorize_url()
         return redirect(authorise_url)
@@ -214,31 +245,31 @@ def fetch_songs():
         )
         song_data = requested_data[0]
         session["graph_data"] = requested_data[2]
-
         session["track_ids"] = [i["track_id"] for i in song_data]
         session["titles"] = [i["track_name"] for i in song_data]
         session["artists"] = [i["artists"].replace(";", ", ") for i in song_data]
         session["lengths"] = [
             seconds_to_mm_ss(int(i["duration_ms"] / 1000)) for i in song_data
         ]
-        return redirect(url_for("export", _external=True, success=False))
+        return redirect(url_for("export", _external=True))
 
 
+# App route where created playlist data is displayed
 @app.route("/export")
 def export():
-    success = False
-    if session.get("success", False) is True:
-        success = True
-        session.pop("success")
+    exported = False
+    if session.get("exported", False) is True:
+        exported = True
+        session.pop("exported")
     return render_template(
         "export.html",
         graph_data=session["graph_data"],
         workout=session["workout"],
-        success=success,
+        exported=exported,
     )
 
 
-# Request Spotify to log the user in
+# App route to which user is sent when they click "Export to Spotify"
 @app.route("/generate", methods=["POST", "GET"])
 def generate():
     name = bleach.clean(request.form.get("name"))
@@ -252,8 +283,7 @@ def generate():
     return redirect(authorise_url)
 
 
-# The user never actually sees this page.
-# This is just where the token info is collected
+# App route which Spotify redirects the user to after login
 @app.route("/redirect")
 def _redirect():
     sp_oauth = get_spotify_oauth()
@@ -271,11 +301,12 @@ def _redirect():
         return redirect(url_for("create_playlist", _external=True))
 
 
-@app.route("/create_playlist")  # probably doesn't need its own url
+# App route for playlist creation
+@app.route("/create_playlist")
 def create_playlist():
     # INITIALISE THE PLAYLIST
-    token_info = session.get("token info", None)
-    sp = Spotify(auth=token_info["access_token"])
+    # It's good practice to create a new client each time
+    sp = get_spotify_session()
     user_info = sp.me()
     user_id = user_info["id"]
     try:
@@ -295,17 +326,8 @@ def create_playlist():
         sp.playlist_add_items(last_playlist_id, ids_to_add)
     except Exception:
         return "Error adding songs to playlist"
-    session["success"] = True
+    session["exported"] = True
     return redirect(url_for("export", _external=True))
-
-
-def get_spotify_oauth():
-    return SpotifyOAuth(
-        client_id=client_id,
-        client_secret=client_secret,
-        redirect_uri=url_for("_redirect", _external=True),
-        scope=scopes,
-    )
 
 
 def string_to_list(input_string):

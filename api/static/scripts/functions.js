@@ -1,5 +1,7 @@
 var selectedWorkoutType;
 
+var previousSelectedWorkout = null; // Global variable to remember the last selected workout
+
 // Function to filter options based on user input
 function filterOptions() {
   updateLikedSongsValue();
@@ -244,66 +246,123 @@ function getSelectedGenres() {
   return selectedGenres;
 }
 
-// Existing JavaScript functions remain unchanged
+function updateDefaultValues(newWorkout) {
+  previousSelectedWorkout = selectedWorkoutType;
+  // Define what to do when the user confirms
+  var onConfirm = function (workout) {
+    // Logic to execute when the user confirms
+    applyWorkoutChanges(workout);
+  };
 
-// Function to update default values based on selected workout
-function updateDefaultValues(workout) {
-  selectedWorkoutType = workout;
-  var tempo = 0;
-  var danceability = 0.5;
-  var energy = 0.5;
-  var defaultGenres = [];
+  // Define what to do when the user cancels
+  var onCancel = function () {
+    revertWorkoutSelection();
+  };
 
-  // Set default values based on the selected workout
-  switch (workout) {
-    case "running":
-      tempo = 90;
-      danceability = 0.7;
-      energy = 0.6;
-      defaultGenres = ["Pop", "Rock", "Electronic"];
-      break;
-    case "boxing":
-      tempo = 130;
-      danceability = 0.5;
-      energy = 0.9;
-      defaultGenres = ["Hip-Hop", "Rock", "Electronic"];
-      break;
-    case "cycling":
-      tempo = 140;
-      danceability = 0.3;
-      energy = 0.7;
-      defaultGenres = ["EDM", "Rock", "Pop"];
-      break;
-    case "yoga":
-      tempo = 60;
-      danceability = 0.1;
-      energy = 0.2;
-      defaultGenres = ["Ambient", "Classical", "Instrumental"];
-      break;
-    case "gym":
-      tempo = 100;
-      danceability = 0.5;
-      energy = 0.6;
-      defaultGenres = ["Metal", "Rock", "Electronic"];
-      break;
-    case "general":
-      tempo = 100;
-      danceability = 0.5;
-      energy = 0.5;
-      break;
+  if (selectedWorkoutType === newWorkout) {
+    // If the workout type hasn't changed, no need to proceed further
+    return;
   }
 
-  // Update default values in the form
-  document.getElementById("tempo").value = tempo;
-  document.getElementById("danceability").value = danceability;
-  document.getElementById("energy").value = energy;
+  var currentTempo = document.getElementById("tempo").value;
+  var currentEnergy = document.getElementById("energy").value;
+  var currentDanceability = document.getElementById("danceability").value;
+  var currentGenres = getSelectedGenres();
+
+  // Define default values for the new workout
+  var currentWorkoutDefaults = getDefaultValuesForWorkout(selectedWorkoutType);
+  // Compare current state with default values
+  if (
+    currentTempo != currentWorkoutDefaults.tempo ||
+    currentEnergy != currentWorkoutDefaults.energy ||
+    currentDanceability != currentWorkoutDefaults.danceability ||
+    !arraysEqual(currentGenres, currentWorkoutDefaults.genres)
+  ) {
+    showModal(newWorkout, onConfirm, onCancel);
+  } else {
+    // If no confirmation is needed, apply changes directly
+    applyWorkoutChanges(newWorkout);
+  }
+}
+
+// Function to apply the new workout changes
+function applyWorkoutChanges(newWorkout) {
+  selectedWorkoutType = newWorkout;
+
+  var newWorkoutDefaults = getDefaultValuesForWorkout(newWorkout);
+
+  document.getElementById("tempo").value = newWorkoutDefaults.tempo;
+  document.getElementById("danceability").value = newWorkoutDefaults.danceability;
+  document.getElementById("energy").value = newWorkoutDefaults.energy;
 
   updateTempoValue();
 
   // Update genres in the selected list
   getSelectedGenres().forEach((genre) => addOptionBackToDropdown(genre));
-  updateGenresList(defaultGenres);
-  handleWorkoutSelection(workout);
+  updateGenresList(newWorkoutDefaults.genres);
+  handleWorkoutSelection(newWorkout);
+}
+
+function getDefaultValuesForWorkout(workout) {
+  switch (workout) {
+    case "running":
+      return {
+        tempo: 90,
+        danceability: 0.7,
+        energy: 0.6,
+        genres: ["Pop", "Rock", "Electronic"],
+      };
+    case "boxing":
+      return {
+        tempo: 130,
+        danceability: 0.5,
+        energy: 0.9,
+        genres: ["Hip-Hop", "Rock", "Electronic"],
+      };
+    case "cycling":
+      return {
+        tempo: 140,
+        danceability: 0.3,
+        energy: 0.7,
+        genres: ["EDM", "Rock", "Pop"],
+      };
+    case "yoga":
+      return {
+        tempo: 60,
+        danceability: 0.1,
+        energy: 0.2,
+        genres: ["Ambient", "Classical", "Instrumental"],
+      };
+    case "gym":
+      return {
+        tempo: 130,
+        danceability: 0.5,
+        energy: 0.6,
+        genres: ["Metal", "Rock", "Electronic"],
+      };
+
+    default:
+      return {
+        tempo: 100,
+        danceability: 0.5,
+        energy: 0.5,
+        genres: [], // Default genres for 'general' or unknown workout types
+      };
+  }
+}
+
+function arraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+
+  // Sort both arrays
+  var sortedArr1 = arr1.slice().sort();
+  var sortedArr2 = arr2.slice().sort();
+
+  // Compare elements after sorting
+  for (var i = 0; i < sortedArr1.length; i++) {
+    if (sortedArr1[i] !== sortedArr2[i]) return false;
+  }
+  return true;
 }
 
 // Function to update the genres list based on selected default genres
@@ -440,3 +499,31 @@ document.getElementById("inputForm").addEventListener("submit", function (event)
     document.getElementById("loading-container").style.display = "block";
   }
 });
+
+// Function to display the modal with callbacks
+function showModal(newWorkout, onConfirm, onCancel) {
+  var modal = document.getElementById("customModal");
+  modal.style.display = "block";
+
+  // Set up the confirm button
+  document.getElementById("confirmBtn").onclick = function () {
+    modal.style.display = "none";
+    onConfirm(newWorkout); // Call the onConfirm callback with newWorkout
+  };
+
+  // Set up the cancel button
+  document.getElementById("cancelBtn").onclick = function () {
+    modal.style.display = "none";
+    onCancel(); // Call the onCancel callback
+  };
+}
+
+function revertWorkoutSelection() {
+  if (previousSelectedWorkout !== null) {
+    // Find and check the radio button corresponding to the previous workout
+    var radioButton = document.querySelector(`input[name="workout"][value="${previousSelectedWorkout}"]`);
+    if (radioButton) {
+      radioButton.checked = true;
+    }
+  }
+}

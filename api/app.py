@@ -45,6 +45,7 @@ scopes = [  # The amount of access to the account that Spotify will allow us
 # This contains forms for the user to input details about the playlist they want
 @app.route("/")
 def index():
+    session.clear()
     return render_template("index.html")
 
 # FUNCTIONS FOR SELECTING SONGS

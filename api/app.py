@@ -124,7 +124,7 @@ def get_songs_from_database(
             selected.append(song)
             total_duration += song["duration_ms"]
             break
-    # shuffle(selected)
+    shuffle(selected)
 
     # Generate data for graph:
     graph_data = []

@@ -124,7 +124,7 @@ def get_songs_from_database(
             selected.append(song)
             total_duration += song["duration_ms"]
             break
-    shuffle(selected)
+    # shuffle(selected)
 
     # Generate data for graph:
     graph_data = []
@@ -226,6 +226,8 @@ def fetch_songs():
         "includeLive": request.form.get("includeLive") == "on",
         "includeLikedSongs": request.form.get("includeLikedSongs") == "on",
     }
+
+    print(bool_flags)
 
     session["includeLikedSongs"] = bool_flags["includeLikedSongs"]
     session["slider_values"] = slider_values

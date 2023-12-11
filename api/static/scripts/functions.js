@@ -226,6 +226,18 @@ function addOptionBackToDropdown(optionText) {
 // Event listener for when an option is selected
 document.getElementById("genre").addEventListener("change", addToSelectedList);
 
+// Add an event listener for the pageshow event
+window.addEventListener('pageshow', function (event) {
+  // Check if the loading container was visible before navigating away
+  const loadingContainer = document.getElementById("loading-container");
+  
+  // If it was visible, hide it
+  if (loadingContainer.style.display === "block") {
+    loadingContainer.style.display = "none";
+    document.getElementById("generatePlaylistButton").style.display = "block";
+  }
+});
+
 // Function to update the hidden input with selected genres
 function updateHiddenInput() {
   var selectedGenres = getSelectedGenres();
